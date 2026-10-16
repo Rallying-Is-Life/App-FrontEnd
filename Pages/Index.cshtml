@@ -12,5 +12,6 @@
         <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body"><h5 class="card-title">Rallies</h5><p class="card-text fs-4" id="rallies-count">--</p></div></div></div>
     </div>
     <script>fetch('@(Configuration["apiRallyingIsLifeBaseURL"] ?? "/stats")/stats').then(r=>r.json()).then(d=>{document.getElementById('clubs-count').textContent=d.clubs;document.getElementById('rallies-count').textContent=d.rallies;}).catch(_=>{});</script>
+    <div class="mt-4"></div>
     <p>Rallying Is Life — a new, free platform for rally results (with live results to come), driver and car profiles, club profiles and all things rallying. Built on crowd-sourced data, the stats and information will grow immense. And best of all — no adverts.</p>
 </div>
