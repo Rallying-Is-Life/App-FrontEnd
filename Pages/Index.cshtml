@@ -7,7 +7,10 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <div id="stats-row"><p>Clubs: -- | Rallies: --</p></div>
-    <script>fetch('@(Configuration["apiRallyingIsLifeBaseURL"] ?? "/stats")/stats').then(r=>r.json()).then(d=>document.getElementById('stats-row').innerHTML='<p>Clubs: '+d.clubs+' | Rallies: '+d.rallies+'</p>').catch(_=>{});</script>
+    <div class="row justify-content-center" id="stats-row">
+        <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body"><h5 class="card-title">Clubs</h5><p class="card-text fs-4" id="clubs-count">--</p></div></div></div>
+        <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body"><h5 class="card-title">Rallies</h5><p class="card-text fs-4" id="rallies-count">--</p></div></div></div>
+    </div>
+    <script>fetch('@(Configuration["apiRallyingIsLifeBaseURL"] ?? "/stats")/stats').then(r=>r.json()).then(d=>{document.getElementById('clubs-count').textContent=d.clubs;document.getElementById('rallies-count').textContent=d.rallies;}).catch(_=>{});</script>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
