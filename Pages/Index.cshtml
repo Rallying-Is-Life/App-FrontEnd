@@ -6,5 +6,7 @@
 
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
+    <div id="stats-row"><p>Clubs: -- | Rallies: --</p></div>
+    <script>fetch('/stats').then(r=>r.json()).then(d=>document.getElementById('stats-row').innerHTML='<p>Clubs: '+d.clubs+' | Rallies: '+d.rallies+'</p>').catch(_=>{});</script>
     <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
