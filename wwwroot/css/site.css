@@ -28,4 +28,5 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
-}
+}/* Theme-aware modern cards — uses bs variables, never hard light */
+.card-modern { background: var(--bs-body-bg); border-color: var(--bs-border-color); border-radius: .75rem; }
