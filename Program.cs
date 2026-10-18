@@ -23,4 +23,6 @@ app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
 
+app.MapGet("/health", () => Results.Json(new { status = "healthy", service = "App-FrontEnd" }));
+
 app.Run();
