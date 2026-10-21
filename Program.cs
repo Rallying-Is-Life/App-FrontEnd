@@ -43,6 +43,14 @@ builder.Services.AddCors(options => options.AddPolicy("AllowFE", p => p.WithOrig
 
 builder.Services.AddAuthorization();
 
+// Session required by AddSessionTokenCaches() (stores OBO tokens in session).
+builder.Services.AddSession(options =>
+{
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+    options.Cookie.SameSite = SameSiteMode.Unspecified;
+});
+
 var app = builder.Build();
 
 if (!app.Environment.IsDevelopment())
@@ -54,6 +62,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseRouting();
 app.UseCookiePolicy();
+app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();
