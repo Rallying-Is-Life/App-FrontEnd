@@ -62,4 +62,6 @@ app.MapRazorPages()
 app.MapControllers();
 app.MapLoginAndLogout();
 
+app.MapGet("/health", () => Results.Json(new { status = "healthy", service = "App-FrontEnd" }));
+
 app.Run();
