@@ -8,12 +8,25 @@ namespace RallyingIsLife.Pages;
 public class ProtectedModel(ITokenAcquisition tokenAcquisition, IConfiguration config) : PageModel
 {
     public string? ApiResult { get; set; }
+    public string? TenantId { get; set; }
+
     public async Task OnGetAsync()
     {
+        TenantId = config["TenantID"] ?? config["AzureAd__TenantId"];
+
         try
         {
-            var apiUrl = (config["apiRallyingIsLifeBaseURL"] ?? "https://dev-rallyingislife-api.azurewebsites.net") + "/stats";
-            var token = await tokenAcquisition.GetAccessTokenForUserAsync(new[] { "api://rallyingislife-api-dev/Api.Read" });
+            // Environment-specific values come from app settings, never hardcoded.
+            var apiBaseUrl = config["apiRallyingIsLifeBaseURL"]
+                ?? throw new InvalidOperationException("apiRallyingIsLifeBaseURL is not configured.");
+            var apiUrl = apiBaseUrl.TrimEnd('/') + "/stats";
+
+            var configuredScopes = config["DownstreamApiScopes"] ?? config["DownstreamApiScope"] ?? "";
+            var scopes = configuredScopes.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            if (scopes.Length == 0)
+                throw new InvalidOperationException("DownstreamApiScopes is not configured.");
+
+            var token = await tokenAcquisition.GetAccessTokenForUserAsync(scopes);
             using var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var resp = await client.GetAsync(apiUrl);
