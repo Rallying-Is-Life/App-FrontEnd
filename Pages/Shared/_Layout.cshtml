@@ -31,12 +31,12 @@
                         </li>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
-                            <li class="nav-item"><a class="nav-link" href="/MicrosoftIdentityAccount/Account/Manage">Hello @User.Identity?.Name</a></li>
-                            <li class="nav-item"><a class="nav-link text-danger" href="/MicrosoftIdentityAccount/Account/SignOut">Sign out</a></li>
+                            <li class="nav-item"><span class="nav-link">Hello @User.Identity?.Name</span></li>
+                            <li class="nav-item"><a class="nav-link text-danger" href="/signout">Sign out</a></li>
                         }
                         else
                         {
-                            <li class="nav-item"><a class="nav-link" href="/MicrosoftIdentityAccount/Account/SignIn">Sign in</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/signin">Sign in</a></li>
                         }
                     </ul>
                 </div>
