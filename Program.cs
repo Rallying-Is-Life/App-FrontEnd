@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 
@@ -17,8 +18,8 @@ var clientSecret = Environment.GetEnvironmentVariable("ClientSecret")
 // Downstream API scope for OBO token acquisition (e.g. "api://rallyingislife-api-dev/Api.Read")
 var downstreamScope = Environment.GetEnvironmentVariable("DownstreamApiScope") ?? "api://rallyingislife-api-dev/Api.Read";
 
-builder.Services.AddAuthentication("AzureAd")
-    .AddMicrosoftIdentityWebApp(options =>
+builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+.AddMicrosoftIdentityWebApp(options =>
     {
         options.Instance = instance;
         options.TenantId = tenantId;
