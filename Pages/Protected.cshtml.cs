@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Identity.Client;
 using Microsoft.Identity.Web;
 using System.Net.Http.Headers;
 namespace RallyingIsLife.Pages;
@@ -17,6 +18,12 @@ public class ProtectedModel(ITokenAcquisition tokenAcquisition, IConfiguration c
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             var resp = await client.GetAsync(apiUrl);
             ApiResult = $"{(int)resp.StatusCode} {resp.StatusCode}: {await resp.Content.ReadAsStringAsync()}";
+        }
+        catch (MsalUiRequiredException)
+        {
+            // Trigger interactive authorization to populate session token cache (incremental consent / CA).
+            HttpContext.Response.Redirect("/login?returnUrl=" + System.Net.WebUtility.UrlEncode("/Protected"));
+            return;
         }
         catch (Exception ex)
         {
