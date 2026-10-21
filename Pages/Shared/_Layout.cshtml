@@ -26,6 +26,18 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/Protected">Auth Demo</a>
+                        </li>
+                        @if (User.Identity?.IsAuthenticated == true)
+                        {
+                            <li class="nav-item"><a class="nav-link" href="/MicrosoftIdentityAccount/Account/Manage">Hello @User.Identity?.Name</a></li>
+                            <li class="nav-item"><a class="nav-link text-danger" href="/MicrosoftIdentityAccount/Account/SignOut">Sign out</a></li>
+                        }
+                        else
+                        {
+                            <li class="nav-item"><a class="nav-link" href="/MicrosoftIdentityAccount/Account/SignIn">Sign in</a></li>
+                        }
                     </ul>
                 </div>
                 <button onclick="toggleTheme()" class="btn btn-sm btn-outline-secondary">Light/Dark</button>
