@@ -17,7 +17,7 @@ var clientSecret = Environment.GetEnvironmentVariable("ClientSecret")
     ?? Environment.GetEnvironmentVariable("AzureAd__ClientSecret") ?? "";
 // Downstream API scope for OBO token acquisition (e.g. "Api.Read,Api.Write").
 // Split on ',' so multiple scopes may be configured in one env var.
-var downstreamScopesRaw = Environment.GetEnvironmentVariable("DownstreamApiScopes") ?? "api://88ec0058-52ea-4dc6-8059-5b3e1d4bb12e/Api.Read,api://88ec0058-52ea-4dc6-8059-5b3e1d4bb12e/Api.Write";
+var downstreamScopesRaw = Environment.GetEnvironmentVariable("DownstreamApiScopes") ?? "Api.Read,Api.Write";
 var downstreamScopes = downstreamScopesRaw.Split(',').Select(s => s.Trim()).ToArray();
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
