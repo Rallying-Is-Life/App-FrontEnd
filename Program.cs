@@ -7,9 +7,15 @@ builder.Services.AddRazorPages();
 
 // Azure AD / Entra External ID settings (from web-app settings, never committed)
 var instance = Environment.GetEnvironmentVariable("AzureAd__Instance") ?? "https://login.microsoftonline.com";
-var tenantId = Environment.GetEnvironmentVariable("AzureAd__TenantId") ?? Environment.GetEnvironmentVariable("Auth__TenantId") ?? "";
-var clientId = Environment.GetEnvironmentVariable("AzureAd__ClientId") ?? "";
-var clientSecret = Environment.GetEnvironmentVariable("AzureAd__ClientSecret") ?? "";
+var tenantId = Environment.GetEnvironmentVariable("TenantID")
+    ?? Environment.GetEnvironmentVariable("AzureAd__TenantId")
+    ?? Environment.GetEnvironmentVariable("Auth__TenantId") ?? "";
+var clientId = Environment.GetEnvironmentVariable("ClientID")
+    ?? Environment.GetEnvironmentVariable("AzureAd__ClientId") ?? "";
+var clientSecret = Environment.GetEnvironmentVariable("ClientSecret")
+    ?? Environment.GetEnvironmentVariable("AzureAd__ClientSecret") ?? "";
+// Downstream API scope for OBO token acquisition (e.g. "api://rallyingislife-api-dev/Api.Read")
+var downstreamScope = Environment.GetEnvironmentVariable("DownstreamApiScope") ?? "api://rallyingislife-api-dev/Api.Read";
 
 builder.Services.AddAuthentication("AzureAd")
     .AddMicrosoftIdentityWebApp(options =>
@@ -21,7 +27,7 @@ builder.Services.AddAuthentication("AzureAd")
         options.CallbackPath = "/signin-oidc";
         options.SignedOutCallbackPath = "/signout-callback-oidc";
     })
-    .EnableTokenAcquisitionToCallDownstreamApi(new[] { "api://rallyingislife-api-dev/Api.Read" })
+    .EnableTokenAcquisitionToCallDownstreamApi(new[] { downstreamScope })
     .AddSessionTokenCaches();
 
 
