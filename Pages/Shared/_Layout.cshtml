@@ -32,11 +32,11 @@
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item"><span class="nav-link">Hello @User.Identity?.Name</span></li>
-                            <li class="nav-item"><a class="nav-link text-danger" href="/signout">Sign out</a></li>
+                            <li class="nav-item"><form asp-area="" action="/logout" method="post" class="d-inline"><button type="submit" class="nav-link btn btn-link text-danger p-0">Sign out</button></form></li>
                         }
                         else
                         {
-                            <li class="nav-item"><a class="nav-link" href="/signin">Sign in</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/login">Sign in</a></li>
                         }
                     </ul>
                 </div>
