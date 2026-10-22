@@ -1,18 +1,17 @@
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http;
 using System.Net.Http.Json;
 using App_FrontEnd.Models;
 
-namespace App_FrontEnd.Controllers;
-public class ClubsController : Controller
+namespace App_FrontEnd.Pages;
+public class ClubsModel : PageModel
 {
-    [HttpGet("/Clubs")]
-    public async Task<IActionResult> Index()
+    public List<ClubItem> Clubs { get; set; } = new();
+    public async Task OnGetAsync()
     {
         using var client = new HttpClient();
         var baseUrl = Environment.GetEnvironmentVariable("apiRallyingIsLifeBaseURL") ?? "https://dev-rallyingislife.azurewebsites.net/";
         client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
-        var result = await client.GetFromJsonAsync<List<ClubItem>>("clubs?page=1&pageSize=20");
-        return View(result ?? new List<ClubItem>());
+        Clubs = await client.GetFromJsonAsync<List<ClubItem>>("clubs?page=1&pageSize=20") ?? new List<ClubItem>();
     }
 }
