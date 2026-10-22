@@ -1,16 +1,19 @@
-@model List<App_FrontEnd.Models.ClubItem>
-@{ Layout = "~/Pages/Shared/_Layout.cshtml"; ViewData["Title"] = "Clubs"; }
+@page
+@model App_FrontEnd.Pages.ClubsModel
+@{
+    ViewData["Title"] = "Clubs";
+}
 <div class="container">
 <h2>Clubs</h2>
 <p class="text-muted">Alphabetical, paginated from API (20/page).</p>
-@if (Model == null || Model.Count == 0)
+@if (Model.Clubs == null || Model.Clubs.Count == 0)
 {
     <p>No clubs found in DB (two expected).</p>
 }
 else
 {
     <table class="table table-striped"><thead><tr><th>Club</th><th>Logo</th></tr></thead><tbody>
-    @foreach (var c in Model)
+    @foreach (var c in Model.Clubs)
     {
         <tr>
             <td>@c.ClubName</td>
