@@ -29,13 +29,10 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-page="/Privacy">Privacy</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" href="/Protected">Auth Demo</a>
-                        </li>
                         @if (User.Identity?.IsAuthenticated == true)
                         {
                             <li class="nav-item"><span class="nav-link">Hello @User.Identity?.Name</span></li>
-                            <li class="nav-item"><form action="/logout" method="post" class="d-inline">@Html.AntiForgeryToken()<button type="submit" class="nav-link btn btn-link text-danger p-0">Sign out</button></form></li>
+                            <li class="nav-item"><form action="/logout" method="post" class="d-inline">@Html.AntiForgeryToken()<button type="submit" class="nav-link btn btn-link">Sign out</button></form></li>
                         }
                         else
                         {
