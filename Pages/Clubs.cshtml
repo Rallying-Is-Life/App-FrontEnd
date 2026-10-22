@@ -3,23 +3,32 @@
 @{
     ViewData["Title"] = "Clubs";
 }
-<div class="container">
-<h2>Clubs</h2>
+<div class="card-modern p-4 mb-4">
+<h2>Club List</h2>
 <p class="text-muted">Directory of motor clubs that have held rallies.</p>
-@if (Model.Clubs == null || Model.Clubs.Count == 0)
-{
-    <p>No clubs found in DB (two expected).</p>
-}
-else
-{
-    <table class="table table-striped"><thead><tr><th>Logo</th><th>Club</th></tr></thead><tbody>
-    @foreach (var c in Model.Clubs)
-    {
-        <tr>
-            <td>@Html.Raw(string.IsNullOrEmpty(c.LogoUrl) ? "—" : $"<img src=\"{c.LogoUrl}\" height=\"40\" />")</td>
-            <td>@c.ClubName</td>
-        </tr>
-    }
-    </tbody></table>
-}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead><tr><th>Club Name</th></tr></thead>
+        <tbody>
+        @foreach (var c in Model.Clubs)
+        {
+            <tr>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        @if (!string.IsNullOrEmpty(c.LogoUrl))
+                        {
+                            <img loading="lazy" src="@c.LogoUrl" alt="" style="width:32px;height:32px;object-fit:contain;" />
+                        }
+                        else
+                        {
+                            <span style="display:inline-block;width:32px;height:32px;" aria-label="no logo"></span>
+                        }
+                        <span>@c.ClubName</span>
+                    </div>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
 </div>
