@@ -7,13 +7,13 @@
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
     <div class="row justify-content-center" id="stats-row">
-        <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body"><h5 class="card-title">Clubs</h5><p class="card-text fs-4" id="clubs-count">--</p></div></div></div>
-        <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body"><h5 class="card-title">Rallies</h5><p class="card-text fs-4" id="rallies-count">--</p></div></div></div>
+        <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body"><h5 class="card-title"><a asp-page="/Clubs" class="text-dark text-decoration-none">Clubs</a></h5><p class="card-text fs-4" id="clubs-count">--</p></div></div></div>
+        <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body"><h5 class="card-title"><a asp-page="/Rallies" class="text-dark text-decoration-none">Rallies</a></h5><p class="card-text fs-4" id="rallies-count">--</p></div></div></div>
         <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body"><h5 class="card-title">Stages</h5><p class="card-text fs-4" id="stages-count">--</p></div></div></div>
     </div>
     <div class="row justify-content-center mt-3" id="rescue-recovery-row">
-        <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body"><h5 class="card-title">Rescue Units</h5><p class="card-text fs-4" id="rescue-units-count">--</p></div></div></div>
-        <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body"><h5 class="card-title">Recovery Units</h5><p class="card-text fs-4" id="recovery-units-count">--</p></div></div></div>
+        <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body"><h5 class="card-title"><a asp-page="/RescueUnits" class="text-dark text-decoration-none">Rescue Units</a></h5><p class="card-text fs-4" id="rescue-units-count">--</p></div></div></div>
+        <div class="col-6 col-md-3"><div class="card text-center"><div class="card-body"><h5 class="card-title"><a asp-page="/RecoveryUnits" class="text-dark text-decoration-none">Recovery Units</a></h5><p class="card-text fs-4" id="recovery-units-count">--</p></div></div></div>
     </div>
     <script>fetch('@(Configuration["apiRallyingIsLifeBaseURL"] ?? "/stats")/stats').then(r=>r.json()).then(d=>{document.getElementById('clubs-count').textContent=d.clubs;document.getElementById('rallies-count').textContent=d.rallies;document.getElementById('stages-count').textContent=d.stages;document.getElementById('rescue-units-count').textContent=d.rescueUnits;document.getElementById('recovery-units-count').textContent=d.recoveryUnits;}).catch(_=>{});</script>
     <div class="mt-4"></div>
