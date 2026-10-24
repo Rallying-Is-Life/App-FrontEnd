@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc.RazorPages; using System.Net.Http.Json; using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Mvc.RazorPages; using System.Net.Http.Json; using Microsoft.Extensions.Configuration; using System.Linq;
 namespace App_FrontEnd.Pages;
 public class RallyProfile : PageModel
 {
@@ -12,6 +12,7 @@ public class RallyProfile : PageModel
             var baseUrl = HttpContext.RequestServices.GetRequiredService<IConfiguration>()["apiRallyingIsLifeBaseURL"]?.TrimEnd('/') ?? "";
             var data = await c.GetFromJsonAsync<RallyProfileItem>($"{baseUrl}/profiles/rally?id={id}");
             if (data != null) { RallyName = data.RallyName; EventDate = data.EventDate; LengthKm = data.LengthKm; StageCount = data.StageCount; Stages = data.Stages ?? new(); }
+            if (!Stages.Any() && !string.IsNullOrEmpty(id)) { try { var stages = await c.GetFromJsonAsync<List<StageInfo>>($"{baseUrl}/stages?rallyRowKey={id}"); if (stages != null) Stages = stages; } catch { } }
         }
     }
 }
