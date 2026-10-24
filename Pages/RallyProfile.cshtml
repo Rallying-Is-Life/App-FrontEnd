@@ -11,15 +11,15 @@
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">{@Model.RallyName}</h5>
+                    <h5 class="card-title">@Model.RallyName</h5>
                     <p class="card-text">
                         <strong>Date:</strong> @Model.EventDate.ToShortDateString()
                     </p>
                     <p class="card-text">
-                        <strong>Length:</strong> {Model.LengthKm} km
+                        <strong>Length:</strong> @Model.LengthKm km
                     </p>
                     <p class="card-text">
-                        <strong>Stages:</strong> {Model.StageCount}
+                        <strong>Stages:</strong> @Model.StageCount
                     </p>
                 </div>
             </div>
@@ -39,9 +39,9 @@
                             @foreach (var stage in Model.Stages)
                             {
                                 <tr>
-                                    <td>{stage.StageNumber}</td>
-                                    <td>{stage.StageName}</td>
-                                    <td>{stage.StageLength}</td>
+                                    <td>@stage.StageNumber</td>
+                                    <td>@stage.StageName</td>
+                                    <td>@stage.StageLength</td>
                                 </tr>
                             }
                         </tbody>
