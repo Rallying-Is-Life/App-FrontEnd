@@ -1,0 +1,25 @@
+@page
+@model App_FrontEnd.Pages.RescueProfile
+@{
+    ViewData["Title"] = "Rescue Unit Profile";
+}
+<div class="card-modern p-4 mb-4">
+    <h2>Rescue Unit Profile</h2>
+    <p class="text-muted">Overview of this rescue unit</p>
+    
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{@Model.Name}</h5>
+                    <p class="card-text">
+                        <strong>Partition Key:</strong> @Model.PartitionKey
+                    </p>
+                    <p class="card-text">
+                        <strong>Row Key:</strong> @Model.RowKey
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

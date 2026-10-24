@@ -1,0 +1,25 @@
+@page
+@model App_FrontEnd.Pages.ClubProfile
+@{
+    ViewData["Title"] = "Club Profile";
+}
+<div class="card-modern p-4 mb-4">
+    <h2>Club Profile</h2>
+    <p class="text-muted">Overview of this club</p>
+    
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{@Model.ClubName}</h5>
+                    <p class="card-text">
+                        <strong>Website:</strong> @Model.Website
+                    </p>
+                    <p class="card-text">
+                        <strong>Logo:</strong> @Model.LogoUrl ?? "(No logo)"
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
