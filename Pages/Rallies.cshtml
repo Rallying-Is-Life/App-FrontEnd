@@ -8,7 +8,7 @@
 <tbody>
 @foreach (var r in Model.Rallies)
 {
-<tr><td>@r.Year</td><td><a class="text-decoration-none" href="/rally?id=@r.RowKey">@r.EventName</a></td><td>@(r.CompetitiveDistanceKm.ToString("0.0")) @r.DistanceUnit</td></tr>
+<tr><td>@r.Year</td><td><a class="text-decoration-none" href="/RallyProfile?id=@r.RowKey">@r.EventName</a></td><td>@(r.CompetitiveDistanceKm.ToString("0.0")) @r.DistanceUnit</td></tr>
 }
 </tbody></table>
 <div class="mt-3">
