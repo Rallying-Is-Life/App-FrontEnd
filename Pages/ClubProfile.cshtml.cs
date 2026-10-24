@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
 namespace App_FrontEnd.Pages;
 public class ClubProfile : PageModel
@@ -10,7 +11,7 @@ public class ClubProfile : PageModel
     public async Task OnGetAsync()
     {
         var id = Request.Query["id"].ToString();
-        var baseUrl = (Environment.GetEnvironmentVariable("apiRallyingIsLifeBaseURL") ?? "https://dev-rallyingislife-api.azurewebsites.net/").TrimEnd('/');
+        var baseUrl = (HttpContext.RequestServices.GetRequiredService<Microsoft.Extensions.Configuration.IConfiguration>()["apiRallyingIsLifeBaseURL"] ?? "").TrimEnd('/');
         using var c = new HttpClient();
         var data = await c.GetFromJsonAsync<ClubProfileApiResponse>($"{baseUrl}/profiles/club?id={id}");
         if (data != null) { ClubName = data.clubName; Website = data.website; LogoUrl = data.logoUrl; Rallies = data.rallies ?? new(); }

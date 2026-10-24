@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.RazorPages; using System.Net.Http.Json;
+using Microsoft.Extensions.Configuration;
 namespace App_FrontEnd.Pages;
 public class RescueProfile : PageModel
 {
