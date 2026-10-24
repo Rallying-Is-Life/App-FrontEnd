@@ -3,8 +3,8 @@
 @{ ViewData["Title"] = "Rescue Units"; }
 <div class="card-modern p-4 mb-4"><h2>Rescue Units</h2>
 <p class="text-muted">Directory of rescue units.</p>
-<table class="table table-striped"><thead><tr><th>Unit</th></tr></thead>
+<table class="table table-sm table-striped table-hover table-bordered rounded table-container"><thead><tr><th>Unit</th></tr></thead>
 <tbody>
-@foreach (var u in Model.Units) { <tr><td>@(u.Name ?? u.RowKey)</td></tr> }
+@foreach (var u in Model.Units) { <tr><td><a class="text-decoration-none" href="/RescueProfile?id=@u.RowKey">@(u.Name ?? u.RowKey)</a></td></tr> }
 </tbody></table>
 </div>

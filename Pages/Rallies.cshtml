@@ -4,11 +4,12 @@
     ViewData["Title"] = "Rallies";
 }
 <h2>Rallies</h2>
-<table class="table"><thead><tr><th>Year</th><th>Name</th><th>Competitive Distance</th></tr></thead>
+<table class="table table-sm table-striped table-hover table-bordered rounded table-container">
+<thead><tr><th>Year</th><th>Name</th><th>Competitive Distance</th></tr></thead>
 <tbody>
 @foreach (var r in Model.Rallies)
 {
-<tr><td>@r.Year</td><td>@r.EventName</td><td>@(r.CompetitiveDistanceKm.ToString("0.0")) @r.DistanceUnit</td></tr>
+<tr><td>@r.Year</td><td><a class="text-decoration-none" href="/RallyProfile?id=@r.RowKey">@r.EventName</a></td><td>@(r.CompetitiveDistanceKm.ToString("0.0")) @r.DistanceUnit</td></tr>
 }
 </tbody></table>
 <div class="mt-3">
