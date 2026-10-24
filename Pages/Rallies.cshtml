@@ -4,7 +4,8 @@
     ViewData["Title"] = "Rallies";
 }
 <h2>Rallies</h2>
-<table class="table"><thead><tr><th>Year</th><th>Name</th><th>Competitive Distance</th></tr></thead>
+<table class="table table-sm table-striped table-hover table-bordered rounded table-container">
+<thead class="table-light"><tr><th>Year</th><th>Name</th><th>Competitive Distance</th></tr></thead>
 <tbody>
 @foreach (var r in Model.Rallies)
 {
