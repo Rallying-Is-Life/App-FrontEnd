@@ -6,15 +6,9 @@
 <div class="card-modern p-4 mb-4">
     <h2>Recovery Unit Profile</h2>
     <h3>@Model.Name</h3>
-    <div class="row g-3">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <p class="card-text mb-0"><a href="@Model.Website">@Model.Website</a></p>
-                </div>
-            </div>
-        </div>
-    </div>
+    @if (!string.IsNullOrEmpty(Model.Website)) {
+    <div class="row g-3 mb-3"><div class="col-md-6"><div class="card"><div class="card-body"><p class="card-text mb-0"><a href="@Model.Website">@Model.Website</a></p></div></div></div></div>
+    }
     <div class="row g-3">
         <div class="col-12">
             <div class="card">
