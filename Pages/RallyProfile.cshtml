@@ -1,0 +1,53 @@
+@page
+@model App_FrontEnd.Pages.RallyProfile
+@{
+    ViewData["Title"] = "Rally Profile";
+}
+<div class="card-modern p-4 mb-4">
+    <h2>Rally Profile</h2>
+    <p class="text-muted">Overview of this rally</p>
+    
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{@Model.RallyName}</h5>
+                    <p class="card-text">
+                        <strong>Date:</strong> @Model.EventDate.ToShortDateString()
+                    </p>
+                    <p class="card-text">
+                        <strong>Length:</strong> {Model.LengthKm} km
+                    </p>
+                    <p class="card-text">
+                        <strong>Stages:</strong> {Model.StageCount}
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Stage Name</th>
+                                <th>Length (km)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var stage in Model.Stages)
+                            {
+                                <tr>
+                                    <td>{stage.StageNumber}</td>
+                                    <td>{stage.StageName}</td>
+                                    <td>{stage.StageLength}</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
