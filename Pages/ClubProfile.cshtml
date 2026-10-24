@@ -19,6 +19,7 @@
                         <strong>Logo:</strong> @Model.LogoUrl ?? "(No logo)"
                     </p>
                 </div>
+                <p class="card-text"><strong>Rallies:</strong></p><ul>@foreach(var r in Model.Rallies){<li>@r.rallyName (@r.year)</li>}</ul>
             </div>
         </div>
     </div>
