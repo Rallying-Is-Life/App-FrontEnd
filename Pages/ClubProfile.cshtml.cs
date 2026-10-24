@@ -16,6 +16,6 @@ public class ClubProfile : PageModel
         var data = await c.GetFromJsonAsync<ClubProfileApiResponse>($"{baseUrl}/profiles/club?id={id}");
         if (data != null) { ClubName = data.clubName; Website = data.website; LogoUrl = data.logoUrl; Rallies = data.rallies ?? new(); }
     }
-    public class ClubRally { public string rallyName { get; set; } = ""; public int year { get; set; } }
+    public class ClubRally { public string rallyName { get; set; } = ""; public int year { get; set; } public string rallyRowKey { get; set; } = ""; }
     public class ClubProfileApiResponse { public string clubName { get; set; } = ""; public string? website { get; set; } public string? logoUrl { get; set; } public List<ClubRally>? rallies { get; set; } }
 }
