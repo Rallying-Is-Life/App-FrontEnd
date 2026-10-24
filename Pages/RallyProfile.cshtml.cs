@@ -12,7 +12,7 @@ public class RallyProfile : PageModel
             var baseUrl = HttpContext.RequestServices.GetRequiredService<IConfiguration>()["apiRallyingIsLifeBaseURL"]?.TrimEnd('/') ?? "";
             var data = await c.GetFromJsonAsync<RallyProfileItem>($"{baseUrl}/profiles/rally?id={id}");
             if (data != null) { RallyName = data.RallyName; EventDate = data.EventDate; LengthKm = data.LengthKm; StageCount = data.StageCount; Stages = data.Stages ?? new(); }
-            if (!Stages.Any() && !string.IsNullOrEmpty(id)) { try { var stages = await c.GetFromJsonAsync<List<StageInfo>>($"{baseUrl}/stages?rallyRowKey={id}"); if (stages != null) Stages = stages; } catch { } }
+            if (!Stages.Any() && !string.IsNullOrEmpty(id)) { try { var stages = await c.GetFromJsonAsync<List<StageInfo>>($"{baseUrl}/profiles/rally/stages?id={id}"); if (stages != null) Stages = stages; } catch { } }
         }
     }
 }
