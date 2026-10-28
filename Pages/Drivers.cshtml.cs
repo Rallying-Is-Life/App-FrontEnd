@@ -6,7 +6,13 @@ public class DriversModel : PageModel
     public async Task OnGetAsync(string q = null)
     {
         var url = "/people?type=driver" + (q != null ? $"&q={q}" : "");
-        try { People = await new HttpClient().GetFromJsonAsync<List<PersonItem>>(url) ?? new(); } catch { People = new(); }
+        try
+        {
+            var resp = await new HttpClient().GetFromJsonAsync<PeopleResp>(url);
+            People = resp?.items ?? new();
+        }
+        catch { People = new(); }
     }
 }
+public class PeopleResp { public List<PersonItem> items { get; set; } }
 public class PersonItem { public string firstName { get; set; } public string surname { get; set; } public string nationality { get; set; } public string eventName { get; set; } public string eventYear { get; set; } }
