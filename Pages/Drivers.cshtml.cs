@@ -10,7 +10,9 @@ public class DriversModel : PageModel
         using var client = new HttpClient();
         var baseUrl = Environment.GetEnvironmentVariable("apiRallyingIsLifeBaseURL") ?? "https://dev-rallyingislife-api.azurewebsites.net/";
         client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
-        People = await client.GetFromJsonAsync<List<PersonItem>>("people?type=driver" + (q != null ? $"&q={q}" : "")) ?? new();
+        var resp = await client.GetFromJsonAsync<PeopleResp>("people?type=driver" + (q != null ? $"&q={q}" : "")) ?? new();
     }
 }
 public class PersonItem { public string firstName { get; set; } public string surname { get; set; } public string nationality { get; set; } }
+
+public class PeopleResp { public List<PersonItem> items { get; set; } }
