@@ -7,8 +7,8 @@
 <h2>Co-Drivers</h2>
 <p class="text-muted">Directory of co-drivers.</p>
 <div class="table-responsive">
-<table class="table table-sm table-striped table-hover table-bordered rounded">
-<thead class="table-light"><tr><th>First Name</th><th>Surname</th><th>Nationality</th></tr></thead>
+<table class="table table-sm table-striped table-hover table-bordered rounded table-container">
+<thead class="table-dark"><tr><th>First Name</th><th>Surname</th><th>Nationality</th></tr></thead>
 <tbody>
 @foreach (var p in Model.People.OrderBy(x => x.surname))
 {
