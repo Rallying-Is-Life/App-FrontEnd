@@ -17,11 +17,4 @@
 </tbody>
 </table>
 </div>
-<h3>Events (newest first)</h3>
-<ul>
-@foreach (var p in Model.People.OrderByDescending(x => (x.eventYear ?? "")))
-{
-<li>@p.eventName (@p.eventYear) — @p.surname, @p.firstName</li>
-}
-</ul>
 </div>
