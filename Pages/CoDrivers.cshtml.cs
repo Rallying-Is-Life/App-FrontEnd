@@ -10,6 +10,8 @@ public class CoDriversModel : PageModel
         using var client = new HttpClient();
         var baseUrl = Environment.GetEnvironmentVariable("apiRallyingIsLifeBaseURL") ?? "https://dev-rallyingislife-api.azurewebsites.net/";
         client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
-        People = await client.GetFromJsonAsync<List<PersonItem>>("people?type=co-driver" + (q != null ? $"&q={q}" : "")) ?? new();
+        var resp = await client.GetFromJsonAsync<PeopleResp>("people?type=co-driver" + (q != null ? $"&q={q}" : "")) ?? new();
     }
 }
+
+public class PeopleResp { public List<PersonItem> items { get; set; } }
