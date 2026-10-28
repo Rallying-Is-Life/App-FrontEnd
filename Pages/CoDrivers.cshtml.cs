@@ -13,4 +13,3 @@ public class CoDriversModel : PageModel
         People = await client.GetFromJsonAsync<List<PersonItem>>("people?type=co-driver" + (q != null ? $"&q={q}" : "")) ?? new();
     }
 }
-public class PersonItem { public string firstName { get; set; } public string surname { get; set; } public string nationality { get; set; } }
