@@ -1,0 +1,24 @@
+@page
+@model App_FrontEnd.Pages.CarProfile
+@{
+ViewData["Title"] = "Car Profile";
+}
+<div class="card-modern p-4 mb-4">
+<h2>Car Profile</h2>
+<div class="row align-items-center g-3 mb-3">
+<div class="col"><h3 class="mb-1">@Model.Make @Model.Model</h3><p class="card-text mb-0">VRM: @Model.VRM</p></div>
+</div>
+<div class="row g-3">
+<div class="col-12">
+<div class="card">
+<div class="card-body">
+<h5>Events</h5>
+<table class="table table-striped table-hover align-middle"><thead class="table-dark"><tr><th>Year</th><th>Rally</th></tr></thead>
+<tbody>
+@foreach(var r in Model.Rallies) { <tr><td>@r.year</td><td><a class="text-decoration-none" href="/RallyProfile?id=@r.rallyRowKey">@r.rallyName</a></td></tr> }
+</tbody></table>
+</div>
+</div>
+</div>
+</div>
+</div>
