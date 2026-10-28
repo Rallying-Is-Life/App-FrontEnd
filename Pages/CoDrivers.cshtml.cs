@@ -15,4 +15,3 @@ public class CoDriversModel : PageModel
     }
 }
 
-public class PeopleResp { public List<PersonItem> items { get; set; } }
