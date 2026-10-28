@@ -9,4 +9,3 @@ public class CoCoCoDriversModel : PageModel
         try { People = await new HttpClient().GetFromJsonAsync<List<PersonItem>>(url) ?? new(); } catch { People = new(); }
     }
 }
-public class PersonItem { public string firstName { get; set; } public string surname { get; set; } public string nationality { get; set; } public string eventName { get; set; } public string eventYear { get; set; } }
