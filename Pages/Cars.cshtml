@@ -1,0 +1,18 @@
+@page
+@model App_FrontEnd.Pages.CarsModel
+@{
+ViewData["Title"] = "Cars";
+}
+<div class="card-modern p-4 mb-4">
+<h2>Car List</h2>
+<p class="text-muted">Directory of cars that have competed.</p>
+<div class="table-responsive">
+<table class="table table-sm table-striped table-hover table-bordered rounded table-container">
+<thead><tr><th>Car</th></tr></thead>
+<tbody>
+@foreach (var c in Model.Cars) {
+<tr><td><a class="text-decoration-none" href="/CarProfile?id=@c.RowKey">@c.Make @c.Model (@c.VRM)</a></td></tr>
+}
+</tbody></table>
+</div>
+</div>
