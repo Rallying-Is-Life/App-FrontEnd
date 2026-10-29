@@ -14,6 +14,6 @@ public class DriversModel : PageModel
         People = resp?.items ?? new();
     }
 }
-public class PersonItem { public string firstName { get; set; } public string surname { get; set; } public string nationality { get; set; } }
+public class PersonItem { public string firstName { get; set; } public string surname { get; set; } public string nationality { get; set; } public string flag { get; set; } }
 
 public class PeopleResp { public List<PersonItem> items { get; set; } }
