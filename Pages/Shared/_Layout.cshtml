@@ -17,7 +17,9 @@
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item"><a class="nav-link" asp-area="" asp-page="/Index">Home</a></li>
                         <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Directories</a>
-                        <ul class="dropdown-menu"><li><a class="dropdown-item" asp-area="" asp-page="/Clubs">Clubs</a></li><li><a class="dropdown-item" asp-area="" asp-page="/Rallies">Rallies</a></li><li><a class="dropdown-item" asp-area="" asp-page="/RescueUnits">Rescue Units</a></li><li><a class="dropdown-item" asp-area="" asp-page="/RecoveryUnits">Recovery Units</a></li></ul></li>
+                        <ul class="dropdown-menu"><li><a class="dropdown-item" asp-area="" asp-page="/Cars">Cars</a></li><li><a class="dropdown-item" asp-area="" asp-page="/Clubs">Clubs</a>
+                        <li><a class="dropdown-item" asp-area="" asp-page="/Drivers">Drivers</a></li>
+                        <li><a class="dropdown-item" asp-area="" asp-page="/CoDrivers">Co-Drivers</a></li></li><li><a class="dropdown-item" asp-area="" asp-page="/Rallies">Rallies</a></li><li><a class="dropdown-item" asp-area="" asp-page="/RecoveryUnits">Recovery Units</a></li><li><a class="dropdown-item" asp-area="" asp-page="/RescueUnits">Rescue Units</a></li></ul></li>
                         <li class="nav-item"><a class="nav-link" asp-page="/Privacy">Privacy</a></li>
                         @if (User.Identity?.IsAuthenticated == true) { <li class="nav-item"><span class="nav-link">Hello @User.Identity?.Name</span></li><li class="nav-item"><form action="/logout" method="post" class="d-inline">@Html.AntiForgeryToken()<button type="submit" class="nav-link btn btn-link">Sign out</button></form></li> }
                         else { <li class="nav-item"><a class="nav-link" href="/login">Sign in</a></li> }
