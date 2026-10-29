@@ -12,7 +12,7 @@
 <tbody>
 @foreach (var p in Model.People.OrderBy(x => x.surname))
 {
-<tr><td>@p.firstName</td><td>@p.surname</td><td>@p.nationality</td></tr>
+<tr><td>@p.firstName</td><td>@p.surname</td><td>@(p.nationality == "Wales" ? "🏴󠁧󠁢󠁷󠁬󠁳󠁿" : p.nationality == "England" ? "🏴󠁧󠁢󠁥󠁮󠁧󠁿" : p.nationality == "Scotland" ? "🏴󠁧󠁢󠁳󠁣󠁴󠁿" : p.nationality == "Northern Ireland" ? "🏴󠁧󠁢󠁮󠁩󠁲󠁿" : p.nationality == "GB" ? "🇬🇧" : p.nationality)</td></tr>
 }
 </tbody>
 </table>
