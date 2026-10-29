@@ -7,11 +7,11 @@
 <h2>Drivers</h2>
 <p class="text-muted">Directory of drivers.</p>
 <div class="table-responsive">
-<table class="table table-sm table-striped table-hover table-bordered rounded table-container"><thead><tr><th>First Name</th><th>Surname</th><th>Nationality</th></tr></thead>
+<table class="table table-sm table-striped table-hover table-bordered rounded table-container"><thead><tr><th>Name</th><th>Nationality</th></tr></thead>
 <tbody>
 @foreach (var p in Model.People.OrderBy(x => x.surname))
 {
-<tr><td>@p.firstName</td><td>@p.surname</td><td>@p.nationality</td></tr>
+<tr><td>@p.firstName @p.surname</td><td>@p.flag</td></tr>
 }
 </tbody>
 </table>
