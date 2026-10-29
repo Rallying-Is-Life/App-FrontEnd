@@ -12,6 +12,10 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">@Model.RallyName</h5>
+                    @if (!string.IsNullOrEmpty(Model.Website))
+                    {
+                        <p class="card-text"><a href="@(Model.Website.StartsWith("@url:") ? Model.Website.Substring(5).Trim('`') : Model.Website)" target="_blank">@(Model.Website.StartsWith("@url:") ? Model.Website.Substring(5).Trim('`') : Model.Website)</a></p>
+                    }
                     <p class="card-text">
                         <strong>Date:</strong> @Model.EventDate.ToShortDateString()
                     </p>
