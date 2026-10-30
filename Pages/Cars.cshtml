@@ -14,5 +14,9 @@ ViewData["Title"] = "Cars";
 <tr><td><a class="text-decoration-none" href="/CarProfile?id=@c.RowKey">@c.Make @c.Model (@c.VRM)</a></td></tr>
 }
 </tbody></table>
+<div class="mt-2">
+@if (Model.Page > 1) { <a class="btn btn-sm btn-outline-primary" href="/Cars?page=@(Model.Page - 1)">Previous</a> }
+<a class="btn btn-sm btn-outline-secondary" href="/Cars?page=@(Model.Page + 1)">Next</a>
+</div>
 </div>
 </div>
