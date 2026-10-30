@@ -10,7 +10,6 @@ public class CarsModel : PageModel {
     public const int MaxPageSize = 100;
     public List<CarItem> Cars { get; set; } = new();
     public async Task OnGetAsync() {
-        if (PageNum < 1) PageNum = 1;
         using var client = new HttpClient();
         var baseUrl = Environment.GetEnvironmentVariable("apiRallyingIsLifeBaseURL") ?? "https://dev-rallyingislife.azurewebsites.net/";
         client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
