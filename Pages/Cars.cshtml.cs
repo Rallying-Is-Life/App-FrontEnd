@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 namespace App_FrontEnd.Pages;
 public class CarsModel : PageModel {
-    [BindProperty(SupportsGet = true)]
+    [BindProperty(SupportsGet = true, Name = "page")]
     public new int PageNum { get; set; } = 1;
     public const int MaxPageSize = 100;
     public List<CarItem> Cars { get; set; } = new();
