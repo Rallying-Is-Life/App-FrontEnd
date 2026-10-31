@@ -8,6 +8,7 @@ public class CarsModel : PageModel {
     public int Page { get; set; } = 1;
     [BindProperty(SupportsGet = true, Name = "p")]
     public int PageParam { get; set; } = 1;
+    public int TotalCount { get; set; } = 0;
     public async Task OnGetAsync() {
         int qPage = 1;
         int.TryParse(Request.Query["p"], out qPage);
@@ -18,6 +19,10 @@ public class CarsModel : PageModel {
         client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
         var url = "cars?page=" + Page + "&pageSize=20";
 if (!string.IsNullOrWhiteSpace(Request.Query["q"])) url += "&q=" + Uri.EscapeDataString(Request.Query["q"]);
+var countUrl = "cars?pageSize=0";
+if (!string.IsNullOrWhiteSpace(Request.Query["q"])) countUrl += "&q=" + Uri.EscapeDataString(Request.Query["q"]);
+var countResp = await client.GetFromJsonAsync<List<CarItem>>(countUrl);
+TotalCount = (countResp?.Count ?? 0);
 Cars = await client.GetFromJsonAsync<List<CarItem>>(url) ?? new List<CarItem>();
     }
 }
