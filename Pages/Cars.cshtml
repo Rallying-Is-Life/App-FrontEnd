@@ -12,13 +12,18 @@ ViewData["Title"] = "Cars";
 <thead><tr><th>Car</th></tr></thead>
 <tbody>
 @foreach (var c in Model.Cars) {
-<tr><td><a class="text-decoration-none" href="/CarProfile?id=@c.RowKey">@c.Make @c.Model (@c.VRM)</a></td></tr>
+<tr><td><a class="text-decoration-none" href="/CarProfile?id=@c.RowKey"><strong>@c.Make @c.Model</strong></a> <span class="reg-plate">@c.VRM</span></td></tr>
 }
 </tbody></table>
-<div class="mt-2">
-@if (Model.Page > 1) { <a class="btn btn-sm btn-outline-primary" href="/Cars?p=@(Model.Page - 1)">Previous</a> }
-<a class="btn btn-sm btn-outline-secondary" href="/Cars?p=@(Model.Page + 1)">Next</a>
+<div class="mt-2 d-flex align-items-center gap-2 flex-wrap">
+@if (Model.Page > 1) { <a class="btn btn-sm btn-outline-primary" href="/Cars?p=@(Model.Page - 1)&q=@Uri.EscapeDataString(Request.Query["q"])">Previous</a> }
+@for (int i = 1; i <= Math.Max(1, (int)Math.Ceiling((double)(Model.TotalCount > 0 ? Model.TotalCount : Model.Cars.Count) / 20.0)); i++) {
+<a class="btn btn-sm @(i == Model.Page ? "btn-primary" : "btn-outline-secondary")" href="/Cars?p=@i&q=@Uri.EscapeDataString(Request.Query["q"])">@i</a>
+}
+@if (Model.Cars.Count == 20 && Model.TotalCount > 20) { <a class="btn btn-sm btn-outline-secondary" href="/Cars?p=@(Model.Page + 1)&q=@Uri.EscapeDataString(Request.Query["q"])">Next</a> }
 </div>
+<p class="text-muted small mt-1">Showing @(((Model.Page - 1) * 20) + 1)–@(Math.Min(Model.Page * 20, Model.TotalCount > 0 ? Model.TotalCount : Model.Cars.Count)) of @(Model.TotalCount > 0 ? Model.TotalCount : Model.Cars.Count)</p>
 <!-- cars-fix-page-116 -->
 </div>
 </div>
+<link rel="stylesheet" href="~/css/reg-plate.css" />
