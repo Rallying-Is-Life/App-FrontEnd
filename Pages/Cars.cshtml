@@ -6,6 +6,7 @@ ViewData["Title"] = "Cars";
 <div class="card-modern p-4 mb-4">
 <h2>Car List</h2>
 <p class="text-muted">Directory of cars that have competed.</p>
+<form method="get" action="/Cars" class="mb-3"><input type="text" name="q" value="@Request.Query["q"]" placeholder="Search car (Make / Model / VRM)" class="form-control" /></form>
 <div class="table-responsive">
 <table class="table table-sm table-striped table-hover table-bordered rounded table-container">
 <thead><tr><th>Car</th></tr></thead>
