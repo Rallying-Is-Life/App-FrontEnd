@@ -19,7 +19,7 @@ public class CarsModel : PageModel {
         client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
         var url = "cars?page=" + Page + "&pageSize=20";
 if (!string.IsNullOrWhiteSpace(Request.Query["q"])) url += "&q=" + Uri.EscapeDataString(Request.Query["q"]);
-var countUrl = "cars?pageSize=0";
+var countUrl = "cars?page=1&pageSize=10000";
 if (!string.IsNullOrWhiteSpace(Request.Query["q"])) countUrl += "&q=" + Uri.EscapeDataString(Request.Query["q"]);
 var countResp = await client.GetFromJsonAsync<List<CarItem>>(countUrl);
 TotalCount = (countResp?.Count ?? 0);
