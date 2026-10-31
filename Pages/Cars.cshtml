@@ -15,8 +15,9 @@ ViewData["Title"] = "Cars";
 }
 </tbody></table>
 <div class="mt-2">
-@if (Model.PageNum > 1) { <a class="btn btn-sm btn-outline-primary" href="/Cars?page=@(Model.PageNum - 1)">Previous</a> }
-<a class="btn btn-sm btn-outline-secondary" href="/Cars?page=@(Model.PageNum + 1)">Next</a>
+@if (Model.Page > 1) { <a class="btn btn-sm btn-outline-primary" href="/Cars?p=@(Model.Page - 1)">Previous</a> }
+<a class="btn btn-sm btn-outline-secondary" href="/Cars?p=@(Model.Page + 1)">Next</a>
 </div>
+<!-- cars-fix-page-116 -->
 </div>
 </div>
