@@ -30,7 +30,7 @@
         </nav>
     </header>
     <div class="container"><main role="main" class="pb-3">@RenderBody()</main></div>
-    <footer class="border-top footer text-muted"><div class="container">&copy; 2025 - Rallying Is Life - <a asp-area="" asp-page="/Privacy">Privacy</a></div></footer>
+    <footer class="border-top footer text-muted"><div class="container">&copy; @DateTime.Now.Year - Rallying Is Life - <a asp-area="" asp-page="/Clubs">Clubs</a> | <a asp-area="" asp-page="/Rallies">Rallies</a> | <a asp-area="" asp-page="/Cars">Cars</a> | <a asp-area="" asp-page="/Drivers">Drivers</a> | <a asp-area="" asp-page="/CoDrivers">Co-Drivers</a> | <a asp-area="" asp-page="/RescueUnits">Rescue Units</a> | <a asp-area="" asp-page="/RecoveryUnits">Recovery Units</a> | <a asp-area="" asp-page="/Privacy">Privacy</a></div></footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
