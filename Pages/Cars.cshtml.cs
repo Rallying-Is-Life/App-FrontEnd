@@ -16,6 +16,8 @@ public class CarsModel : PageModel {
         using var client = new HttpClient();
         var baseUrl = Environment.GetEnvironmentVariable("apiRallyingIsLifeBaseURL") ?? "https://dev-rallyingislife.azurewebsites.net/";
         client.BaseAddress = new Uri(baseUrl.TrimEnd('/') + "/");
-        Cars = await client.GetFromJsonAsync<List<CarItem>>("cars?page=" + Page + "&pageSize=20") ?? new List<CarItem>();
+        var url = "cars?page=" + Page + "&pageSize=20";
+if (!string.IsNullOrWhiteSpace(Request.Query["q"])) url += "&q=" + Uri.EscapeDataString(Request.Query["q"]);
+Cars = await client.GetFromJsonAsync<List<CarItem>>(url) ?? new List<CarItem>();
     }
 }
