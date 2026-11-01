@@ -2,23 +2,29 @@
 @model App_FrontEnd.Pages.CarsModel
 @{
 ViewData["Title"] = "Cars";
+var qv = Request.Query["q"].ToString() ?? "";
 }
 <div class="card-modern p-4 mb-4">
 <h2>Car List</h2>
 <p class="text-muted">Directory of cars that have competed.</p>
-<form method="get" action="/Cars" class="mb-3"><input type="text" name="q" value="@Request.Query["q"]" placeholder="Search car (Make / Model / VRM)" class="form-control" /></form>
+<form method="get" action="/Cars" class="mb-3"><input type="text" name="q" value="@qv" placeholder="Search car (Make / Model / VRM)" class="form-control" /></form>
 <div class="table-responsive">
 <table class="table table-sm table-striped table-hover table-bordered rounded table-container">
-<thead><tr><th>Car</th></tr></thead>
+<thead class="table-dark"><tr><th>Car</th><th>Registration</th></tr></thead>
 <tbody>
 @foreach (var c in Model.Cars) {
-<tr><td><a class="text-decoration-none" href="/CarProfile?id=@c.RowKey">@c.Make @c.Model (@c.VRM)</a></td></tr>
+<tr><td><a class="text-decoration-none" href="/CarProfile?id=@c.RowKey"><strong>@c.Make @c.Model</strong></a></td><td><span class="reg-plate">@c.VRM</span></td></tr>
 }
 </tbody></table>
-<div class="mt-2">
-@if (Model.Page > 1) { <a class="btn btn-sm btn-outline-primary" href="/Cars?p=@(Model.Page - 1)">Previous</a> }
-<a class="btn btn-sm btn-outline-secondary" href="/Cars?p=@(Model.Page + 1)">Next</a>
 </div>
+<div class="mt-2 d-flex align-items-center gap-2 flex-wrap">
+@if (Model.Page > 1) { <a class="btn btn-sm btn-outline-primary" href="@($"/Cars?p={Model.Page - 1}" + (string.IsNullOrEmpty(qv) ? "" : $"&q={Uri.EscapeDataString(qv)}"))">Previous</a> }
+@for (int i = 1; i <= Math.Max(1, (int)Math.Ceiling((double)(Model.TotalCount > 0 ? Model.TotalCount : Math.Max(Model.Cars.Count, 1)) / 20.0)); i++) {
+<a class="btn btn-sm @(i == Model.Page ? "btn-primary" : "btn-outline-secondary")" href="@($"/Cars?p={i}" + (string.IsNullOrEmpty(qv) ? "" : $"&q={Uri.EscapeDataString(qv)}"))">@i</a>
+}
+@if (Model.Cars.Count == 20) { <a class="btn btn-sm btn-outline-secondary" href="@($"/Cars?p={Model.Page + 1}" + (string.IsNullOrEmpty(qv) ? "" : $"&q={Uri.EscapeDataString(qv)}"))">Next</a> }
+</div>
+<p class="text-muted small mt-1">Showing @(((Model.Page - 1) * 20) + 1)–@(Math.Min(Model.Page * 20, (Model.TotalCount > 0 ? Model.TotalCount : (Model.Cars.Count > 0 ? Model.Cars.Count : 1)))) of @(Model.TotalCount > 0 ? Model.TotalCount : (Model.Cars.Count > 0 ? Model.Cars.Count : 1))</p>
 <!-- cars-fix-page-116 -->
 </div>
-</div>
+<link rel="stylesheet" href="~/css/reg-plate.css" />
