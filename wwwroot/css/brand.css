@@ -1,0 +1,387 @@
+/* ============================================================
+   Rallying Is Life: Night Forest brand (plain CSS, no build step)
+
+   Load AFTER bootstrap.css and BEFORE your own site.css.
+   Assumes Bootstrap 5.3.x with data-bs-theme="light|dark".
+   ============================================================ */
+
+/* ---- Fonts (self-host the .woff2 files in wwwroot/fonts) ---- */
+/* barlow-condensed-regular - latin */
+@font-face {
+  font-display: swap; /* Check @url:`https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display` for other options. */
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/barlow-condensed-v13-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* barlow-condensed-600 - latin */
+@font-face {
+  font-display: swap; /* Check @url:`https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display` for other options. */
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 600;
+  src: url('/fonts/barlow-condensed-v13-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* barlow-condensed-700 - latin */
+@font-face {
+  font-display: swap; /* Check @url:`https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display` for other options. */
+  font-family: 'Barlow Condensed';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/barlow-condensed-v13-latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* inter-regular - latin */
+@font-face {
+  font-display: swap; /* Check @url:`https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display` for other options. */
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 400;
+  src: url('/fonts/inter-v20-latin-regular.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* inter-500 - latin */
+@font-face {
+  font-display: swap; /* Check @url:`https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display` for other options. */
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  src: url('/fonts/inter-v20-latin-500.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* inter-600 - latin */
+@font-face {
+  font-display: swap; /* Check @url:`https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display` for other options. */
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 600;
+  src: url('/fonts/inter-v20-latin-600.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+/* inter-700 - latin */
+@font-face {
+  font-display: swap; /* Check @url:`https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display` for other options. */
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 700;
+  src: url('/fonts/inter-v20-latin-700.woff2') format('woff2'); /* Chrome 36+, Opera 23+, Firefox 39+, Safari 12+, iOS 10+ */
+}
+
+/* ---- Light theme ---- */
+:root,
+[data-bs-theme="light"] {
+  --ril-amber: #FFB703;
+  --ril-forest: #2E6B4A;
+  --ril-plate: #F7D117;
+  --ril-surface: #FFFFFF;
+  --ril-raised: #EAF0EB;
+  --ril-border: #D5DFD8;
+  /* Amber text fails contrast on light backgrounds, so use deep forest. */
+  --ril-accent-text: #1F5A3C;
+
+  --bs-body-bg: #F4F7F4;
+  --bs-body-bg-rgb: 244, 247, 244;
+  --bs-body-color: #111A15;
+  --bs-body-color-rgb: 17, 26, 21;
+  --bs-emphasis-color: #0B120F;
+  --bs-emphasis-color-rgb: 11, 18, 15;
+  --bs-secondary-color: #52625A;
+  --bs-secondary-color-rgb: 82, 98, 90;
+  --bs-secondary-bg: #EAF0EB;
+  --bs-secondary-bg-rgb: 234, 240, 235;
+  --bs-tertiary-bg: #F0F4F1;
+  --bs-tertiary-bg-rgb: 240, 244, 241;
+  --bs-border-color: #D5DFD8;
+
+  --bs-link-color: #1F5A3C;
+  --bs-link-color-rgb: 31, 90, 60;
+  --bs-link-hover-color: #194A31;
+  --bs-link-hover-color-rgb: 25, 74, 49;
+
+  --bs-primary: #FFB703;
+  --bs-primary-rgb: 255, 183, 3;
+  --bs-focus-ring-color: rgba(255, 183, 3, 0.55);
+
+  --bs-body-font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --bs-font-sans-serif: var(--bs-body-font-family);
+  --bs-body-line-height: 1.6;
+  --bs-border-radius: 0.375rem;
+  --bs-border-radius-sm: 0.25rem;
+  --bs-border-radius-lg: 0.625rem;
+  --bs-border-radius-xl: 1rem;
+}
+
+/* ---- Dark theme ---- */
+[data-bs-theme="dark"] {
+  --ril-surface: #141F1A;
+  --ril-raised: #1C2B24;
+  --ril-border: #263A31;
+  --ril-accent-text: #FFB703;
+
+  --bs-body-bg: #0B120F;
+  --bs-body-bg-rgb: 11, 18, 15;
+  --bs-body-color: #E8EFEA;
+  --bs-body-color-rgb: 232, 239, 234;
+  --bs-emphasis-color: #FFFFFF;
+  --bs-emphasis-color-rgb: 255, 255, 255;
+  --bs-secondary-color: #9FB0A6;
+  --bs-secondary-color-rgb: 159, 176, 166;
+  --bs-secondary-bg: #141F1A;
+  --bs-secondary-bg-rgb: 20, 31, 26;
+  --bs-tertiary-bg: #1C2B24;
+  --bs-tertiary-bg-rgb: 28, 43, 36;
+  --bs-border-color: #263A31;
+
+  --bs-link-color: #6FCF97;
+  --bs-link-color-rgb: 111, 207, 151;
+  --bs-link-hover-color: #9BE0B8;
+  --bs-link-hover-color-rgb: 155, 224, 184;
+}
+
+/* ---- Links: no underline until hover ---- */
+a {
+  text-decoration: none;
+}
+a:hover {
+  text-decoration: underline;
+}
+
+/* ---- Headings: condensed and tight ---- */
+h1, h2, h3, h4, h5, h6,
+.h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  font-weight: 700;
+  line-height: 1.1;
+}
+h1, .h1 { font-size: clamp(2.25rem, 1.6rem + 2vw, 3rem); }
+h2, .h2 { font-size: clamp(1.9rem, 1.5rem + 1.2vw, 2.25rem); }
+h3, .h3 { font-size: clamp(1.5rem, 1.3rem + 0.7vw, 1.75rem); }
+
+/* ---- Focus: visible in both themes ---- */
+:focus-visible {
+  outline: 3px solid var(--ril-accent-text);
+  outline-offset: 2px;
+}
+
+/* ---- Buttons ----
+   Bootstrap bakes button colours into .btn-primary, so override them here. */
+.btn {
+  --bs-btn-font-weight: 600;
+}
+.btn-primary {
+  --bs-btn-color: #0B120F;
+  --bs-btn-bg: #FFB703;
+  --bs-btn-border-color: #FFB703;
+  --bs-btn-hover-color: #0B120F;
+  --bs-btn-hover-bg: #E6A400;
+  --bs-btn-hover-border-color: #E6A400;
+  --bs-btn-focus-shadow-rgb: 255, 183, 3;
+  --bs-btn-active-color: #0B120F;
+  --bs-btn-active-bg: #CC9200;
+  --bs-btn-active-border-color: #CC9200;
+  --bs-btn-disabled-color: #0B120F;
+  --bs-btn-disabled-bg: #FFB703;
+  --bs-btn-disabled-border-color: #FFB703;
+}
+.btn-secondary {
+  --bs-btn-color: #FFFFFF;
+  --bs-btn-bg: #2E6B4A;
+  --bs-btn-border-color: #2E6B4A;
+  --bs-btn-hover-color: #FFFFFF;
+  --bs-btn-hover-bg: #265A3E;
+  --bs-btn-hover-border-color: #265A3E;
+  --bs-btn-focus-shadow-rgb: 46, 107, 74;
+  --bs-btn-active-color: #FFFFFF;
+  --bs-btn-active-bg: #204D35;
+  --bs-btn-active-border-color: #204D35;
+  --bs-btn-disabled-color: #FFFFFF;
+  --bs-btn-disabled-bg: #2E6B4A;
+  --bs-btn-disabled-border-color: #2E6B4A;
+}
+.btn-outline-primary {
+  --bs-btn-color: var(--ril-accent-text);
+  --bs-btn-border-color: var(--ril-accent-text);
+  --bs-btn-hover-color: #0B120F;
+  --bs-btn-hover-bg: #FFB703;
+  --bs-btn-hover-border-color: #FFB703;
+  --bs-btn-active-color: #0B120F;
+  --bs-btn-active-bg: #E6A400;
+  --bs-btn-active-border-color: #E6A400;
+  --bs-btn-focus-shadow-rgb: 255, 183, 3;
+}
+
+/* ---- Form focus (Bootstrap hard-codes blue here) ---- */
+.form-control:focus,
+.form-select:focus {
+  border-color: #FFB703;
+  box-shadow: 0 0 0 0.25rem rgba(255, 183, 3, 0.35);
+}
+
+/* ---- Pagination (Bootstrap .pagination) ----
+   If your paging uses custom classes, change their hard-coded blue to these values. */
+.pagination {
+  --bs-pagination-color: var(--ril-accent-text);
+  --bs-pagination-bg: transparent;
+  --bs-pagination-border-color: var(--ril-border);
+  --bs-pagination-hover-color: var(--bs-body-color);
+  --bs-pagination-hover-bg: var(--ril-raised);
+  --bs-pagination-hover-border-color: var(--ril-border);
+  --bs-pagination-focus-color: var(--bs-body-color);
+  --bs-pagination-focus-bg: var(--ril-raised);
+  --bs-pagination-focus-box-shadow: 0 0 0 0.2rem rgba(255, 183, 3, 0.35);
+  --bs-pagination-active-color: #0B120F;
+  --bs-pagination-active-bg: #FFB703;
+  --bs-pagination-active-border-color: #FFB703;
+  --bs-pagination-disabled-color: var(--bs-secondary-color);
+  --bs-pagination-disabled-bg: transparent;
+  --bs-pagination-disabled-border-color: var(--ril-border);
+}
+
+/* ---- Navbar: always dark forest ----
+   Markup: <nav class="navbar navbar-expand-lg ril-nav" data-bs-theme="dark"> */
+.navbar.ril-nav {
+  background-color: #0F1D17;
+  border-bottom: 1px solid #263A31;
+  --bs-navbar-color: rgba(232, 239, 234, 0.8);
+  --bs-navbar-hover-color: #FFFFFF;
+  --bs-navbar-active-color: #FFB703;
+  --bs-navbar-brand-color: #FFFFFF;
+  --bs-navbar-brand-hover-color: #FFFFFF;
+}
+.ril-nav .navbar-brand {
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-weight: 700;
+  font-size: 1.4rem;
+  letter-spacing: 0.02em;
+}
+.ril-nav .nav-link {
+  position: relative;
+  font-weight: 500;
+}
+.ril-nav .nav-link::after {
+  content: "";
+  position: absolute;
+  left: var(--bs-navbar-nav-link-padding-x);
+  right: var(--bs-navbar-nav-link-padding-x);
+  bottom: 0.2rem;
+  height: 2px;
+  background: #FFB703;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.15s ease;
+}
+.ril-nav .nav-link:hover::after,
+.ril-nav .nav-link.active::after {
+  transform: scaleX(1);
+}
+
+/* ---- Cards: surface colour + border, no shadow ---- */
+.card {
+  --bs-card-bg: var(--ril-surface);
+  --bs-card-border-color: var(--ril-border);
+  --bs-card-border-radius: 0.625rem;
+  --bs-card-inner-border-radius: calc(0.625rem - 1px);
+}
+
+/* Whole card is a link. Markup: <a class="card ril-card-link" href="...">...</a> */
+.ril-card-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+.ril-card-link:hover,
+.ril-card-link:focus-visible {
+  color: inherit;
+  text-decoration: none;
+  border-color: #FFB703;
+  background-color: var(--ril-raised);
+}
+
+/* ---- Stat tile ---- */
+.ril-stat {
+  padding: 1.25rem 1.5rem;
+}
+.ril-stat__value {
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-weight: 700;
+  font-size: 2.75rem;
+  line-height: 1;
+  color: var(--ril-accent-text);
+}
+.ril-stat__label {
+  margin-top: 0.35rem;
+  color: var(--bs-secondary-color);
+}
+
+/* ---- Hero ----
+   Markup: <section class="ril-hero" style="--ril-hero-image: url('/img/hero.jpg')"> */
+.ril-hero {
+  position: relative;
+  padding: clamp(3rem, 8vw, 6rem) 1.5rem;
+  border-radius: var(--bs-border-radius-xl);
+  overflow: hidden;
+  color: #F4F7F4;
+  background-image:
+    linear-gradient(180deg, rgba(11, 18, 15, 0.35) 0%, rgba(11, 18, 15, 0.92) 100%),
+    var(--ril-hero-image, linear-gradient(135deg, #0F1D17, #1F5A3C));
+  background-size: cover;
+  background-position: center;
+}
+.ril-hero h1,
+.ril-hero .h1 {
+  max-width: 18ch;
+  color: #FFFFFF;
+}
+.ril-hero p {
+  max-width: 60ch;
+}
+
+/* ---- Registration plate badge ----
+   Markup: <span class="reg-plate">BNH233X</span>
+   Unknown reg: <span class="reg-plate reg-plate--unknown">Reg unknown</span> */
+.reg-plate {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  background: var(--ril-plate);
+  color: #111111;
+  border: 1px solid rgba(0, 0, 0, 0.55);
+  border-radius: var(--bs-border-radius-sm);
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif;
+  font-weight: 700;
+  font-size: 1.05em;
+  letter-spacing: 0.08em;
+  line-height: 1.4;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.reg-plate--unknown {
+  background: transparent;
+  color: var(--bs-secondary-color);
+  border: 1px dashed var(--ril-border);
+  font-family: var(--bs-body-font-family);
+  font-weight: 500;
+  font-size: 0.9em;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* ---- Tables ---- */
+.table {
+  --bs-table-hover-bg: var(--ril-raised);
+  --bs-table-striped-bg: var(--ril-surface);
+  --bs-table-border-color: var(--ril-border);
+}
+.table td,
+.table th {
+  vertical-align: middle;
+}
+
+/* ---- Footer ---- */
+.ril-footer {
+  border-top: 1px solid var(--ril-border);
+  color: var(--bs-secondary-color);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ril-nav .nav-link::after,
+  .ril-card-link {
+    transition: none;
+  }
+}
