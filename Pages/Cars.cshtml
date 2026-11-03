@@ -13,7 +13,7 @@ var qv = Request.Query["q"].ToString() ?? "";
 <thead class="table-dark"><tr><th>Car</th><th>Registration</th></tr></thead>
 <tbody>
 @foreach (var c in Model.Cars) {
-<tr><td><a class="text-decoration-none" href="/CarProfile?id=@c.RowKey"><strong>@c.Make @c.Model</strong></a><br/><img src="https://@(Environment.GetEnvironmentVariable("StorageAccountName") ?? "rallyingislife").blob.core.windows.net/mfrlogo/@((c.Make ?? "").ToLowerInvariant()).jpg" alt="@c.Make" style="height:24px;" onerror="this.style.display='none'" /></td><td><span class="reg-plate">@c.VRM</span></td></tr>
+<tr><td><a class="text-decoration-none" href="/CarProfile?id=@c.RowKey"><strong>@c.Make @c.Model</strong></a><br/><img src="https://@(Environment.GetEnvironmentVariable("StorageAccountName") ?? "rallyingislife").blob.core.windows.net/mfrlogo/@((c.Make ?? "").ToLowerInvariant()).png" alt="@c.Make" style="height:24px;" onerror="this.style.display='none'" /></td><td><span class="reg-plate">@c.VRM</span></td></tr>
 }
 </tbody></table>
 </div>
