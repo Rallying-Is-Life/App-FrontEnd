@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "flag-icons": "^7.6.0"
+  },
+  "scripts": {
+    "build:flags": "mkdir -p wwwroot/images/flags && cp -r node_modules/flag-icons/flags/1x1 wwwroot/images/flags/ && cp -r node_modules/flag-icons/flags/4x3 wwwroot/images/flags/"
+  }
+}
