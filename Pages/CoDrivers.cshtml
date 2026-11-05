@@ -12,7 +12,7 @@
 <tbody>
 @foreach (var p in Model.People.OrderBy(x => x.surname))
 {
-<tr><td>@p.firstName @p.surname</td><td>@p.flag</td></tr>
+<tr><td>@p.firstName @p.surname</td><td>@if (!string.IsNullOrEmpty(p.flag)) { <img src="@p.flag" alt="Flag" style="height:20px; width:auto;" /> }</td></tr>
 }
 </tbody>
 </table>

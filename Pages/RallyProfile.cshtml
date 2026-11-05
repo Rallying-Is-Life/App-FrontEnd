@@ -38,6 +38,7 @@
                         <thead>
                             <tr>
                                 <th>#</th>
+                                <th>Flag</th>
                                 <th>Stage Name</th>
                                 <th>Length</th>
                             </tr>
@@ -47,6 +48,7 @@
                             {
                                 <tr>
                                     <td>@stage.StageNumber</td>
+                                    <td>@if (!string.IsNullOrEmpty(stage.FlagUrl)) { <img src="@stage.FlagUrl" alt="Flag" style="height:20px; width:auto;" /> }</td>
                                     <td>@stage.StageName</td>
                                     <td>@stage.StageLength</td>
                                 </tr>
