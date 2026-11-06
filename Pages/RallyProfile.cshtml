@@ -30,17 +30,7 @@
                     </p>
                     @if (!string.IsNullOrEmpty(Model.Country))
                     {
-                        <p class="card-text">
-                            <strong>Country:</strong> @Model.Country
-                            @if (!string.IsNullOrEmpty(Model.Region))
-                            {
-                                <span>, @Model.Region</span>
-                            }
-                            @if (!string.IsNullOrEmpty(Model.FlagUrl))
-                            {
-                                <span><img src="@Model.FlagUrl" alt="Flag" style="height:20px; width:auto; margin-left:8px;" /></span>
-                            }
-                        </p>
+                        <p class="card-text"><strong>Country:</strong> <span><img src="@Model.FlagUrl" alt="Flag" style="height:20px; width:auto; margin-left:8px;" /></span></p>
                     }
                 </div>
             </div>
