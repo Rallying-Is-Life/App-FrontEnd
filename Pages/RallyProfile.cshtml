@@ -15,14 +15,23 @@
     ViewData["Title"] = "Rally Profile";
 }
 <div class="card-modern p-4 mb-4">
-    <h2>Rally Profile</h2>
+    @if (!string.IsNullOrEmpty(Model.LogoUrl) && !string.IsNullOrEmpty(Model.RallyName) && Model.EventDate != null)
+    {
+        <div class="text-center mb-3">
+            <img src="@Model.LogoUrl" alt="Rally logo" style="max-width:150px;max-height:150px;object-fit:contain;" />
+            <h2>@Model.EventDate.Year @Model.RallyName</h2>
+        </div>
+    }
+    else
+    {
+        <h2>Rally Profile</h2>
+    }
     <p class="text-muted">Overview of this rally</p>
     
     <div class="row g-3">
         <div class="col-md-6">
             <div class="card">
                 <div class="card-body">
-                    <h5 class="card-title">@Model.RallyName</h5>
                     @if (!string.IsNullOrEmpty(Model.Website))
                     {
                         <p class="card-text"><a href="@(Model.Website.StartsWith("@url:") ? Model.Website.Substring(5).Trim('`') : Model.Website)" target="_blank">@(Model.Website.StartsWith("@url:") ? Model.Website.Substring(5).Trim('`') : Model.Website)</a></p>
