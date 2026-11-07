@@ -1,6 +1,17 @@
 @page
 @model App_FrontEnd.Pages.RallyProfile
 @{
+    string FormatDateRange()
+    {
+        if (Model.EndDate.HasValue && Model.EndDate.Value != Model.EventDate)
+        {
+            return Model.EventDate.ToString("dd/MM/yyyy") + "-" + Model.EndDate.Value.ToString("dd/MM/yyyy");
+        }
+        return Model.EventDate.ToString("dd/MM/yyyy");
+    }
+    string DateDisplay = FormatDateRange();
+}
+@{
     ViewData["Title"] = "Rally Profile";
 }
 <div class="card-modern p-4 mb-4">
@@ -26,7 +37,7 @@
                         <p class="card-text"><a href="@(Model.Website.StartsWith("@url:") ? Model.Website.Substring(5).Trim('`') : Model.Website)" target="_blank">@(Model.Website.StartsWith("@url:") ? Model.Website.Substring(5).Trim('`') : Model.Website)</a></p>
                     }
                     <p class="card-text">
-                        <strong>Date:</strong> @Model.EventDate.ToShortDateString()
+                        <strong>Date:</strong> @DateDisplay
                     </p>
                     <p class="card-text">
                         <strong>Length:</strong> @Model.LengthKm km
