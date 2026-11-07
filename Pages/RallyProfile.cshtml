@@ -64,6 +64,7 @@
                             <tr>
                                 <th>#</th>
                                 <th>Flag</th>
+                                <th>Leg</th>
                                 @if (IsMultiDay)
                                 {
                                     <th>Date</th>
@@ -78,6 +79,7 @@
                                 <tr>
                                     <td>@stage.StageNumber</td>
                                     <td>@if (!string.IsNullOrEmpty(stage.FlagUrl)) { <img src="@stage.FlagUrl" alt="Flag" style="height:20px; width:auto;" /> }</td>
+                                    <td>@stage.Leg</td>
                                     @if (IsMultiDay)
                                     {
                                         <td>@(stage.StageDate.HasValue ? stage.StageDate.Value.ToString("dd/MM/yyyy") : string.Empty)</td>
