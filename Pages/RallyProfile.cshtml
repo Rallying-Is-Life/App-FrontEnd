@@ -5,9 +5,9 @@
     {
         if (Model.EndDate.HasValue && Model.EndDate.Value != Model.EventDate)
         {
-            return Model.EventDate.ToString("MM/dd/yyyy") + "-" + Model.EndDate.Value.ToString("MM/dd/yyyy");
+            return Model.EventDate.ToString("dd/MM/yyyy") + "-" + Model.EndDate.Value.ToString("dd/MM/yyyy");
         }
-        return Model.EventDate.ToString("MM/dd/yyyy");
+        return Model.EventDate.ToString("dd/MM/yyyy");
     }
     string DateDisplay = FormatDateRange();
 }
