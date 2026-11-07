@@ -16,5 +16,5 @@ public class RallyProfile : PageModel
         }
     }
 }
-public class StageInfo { public int StageNumber { get; set; } public string StageName { get; set; } = string.Empty; public string StageLength { get; set; } = string.Empty; public string? FlagUrl { get; set; } }
+public class StageInfo { public int StageNumber { get; set; } public string StageName { get; set; } = string.Empty; public string StageLength { get; set; } = string.Empty; public string? FlagUrl { get; set; } public DateTimeOffset? StageDate { get; set; } }
 public class RallyProfileItem { public string RallyName { get; set; } = string.Empty; public DateTime EventDate { get; set; } public DateTime? EndDate { get; set; } public double LengthKm { get; set; } public int StageCount { get; set; } public int EntryCount { get; set; } public string RallyRowKey { get; set; } = string.Empty; public string Website { get; set; } = string.Empty; public List<StageInfo>? Stages { get; set; } public string? Country { get; set; } public string? Region { get; set; } public string? FlagUrl { get; set; } public string? LogoUrl { get; set; } }
