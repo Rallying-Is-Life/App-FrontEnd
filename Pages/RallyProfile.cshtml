@@ -10,6 +10,7 @@
         return Model.EventDate.ToString("dd/MM/yyyy");
     }
     string DateDisplay = FormatDateRange();
+    bool IsMultiDay = Model.EndDate.HasValue && Model.EndDate.Value != Model.EventDate;
 }
 @{
     ViewData["Title"] = "Rally Profile";
@@ -63,6 +64,10 @@
                             <tr>
                                 <th>#</th>
                                 <th>Flag</th>
+                                @if (IsMultiDay)
+                                {
+                                    <th>Date</th>
+                                }
                                 <th>Stage Name</th>
                                 <th>Length</th>
                             </tr>
@@ -73,6 +78,10 @@
                                 <tr>
                                     <td>@stage.StageNumber</td>
                                     <td>@if (!string.IsNullOrEmpty(stage.FlagUrl)) { <img src="@stage.FlagUrl" alt="Flag" style="height:20px; width:auto;" /> }</td>
+                                    @if (IsMultiDay)
+                                    {
+                                        <td>@(stage.StageDate.HasValue ? stage.StageDate.Value.ToString("dd/MM/yyyy") : string.Empty)</td>
+                                    }
                                     <td>@stage.StageName</td>
                                     <td>@stage.StageLength</td>
                                 </tr>
