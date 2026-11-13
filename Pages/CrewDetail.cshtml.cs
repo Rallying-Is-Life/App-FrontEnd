@@ -15,6 +15,10 @@ namespace App_FrontEnd.Pages
         public string CoDriverName { get; set; } = string.Empty;
         public string RaceNumber { get; set; } = string.Empty;
         public string RaceClass { get; set; } = string.Empty;
+        public int? OverallPosition { get; set; }
+        public int? ClassPosition { get; set; }
+        public string DriverCountry { get; set; } = string.Empty;
+        public string CoDriverCountry { get; set; } = string.Empty;
         public List<StageTimeDetail> Stages { get; set; } = new();
         public int? TotalTimeSeconds { get; set; }
         public int StagesCompleted { get; set; }
@@ -54,6 +58,7 @@ namespace App_FrontEnd.Pages
                 {
                     RallyName = rally.RallyName;
                     EventDate = rally.EventDate;
+                    DriverCountry = rally.Country ?? string.Empty;
                 }
             }
             catch (Exception ex)
@@ -87,7 +92,9 @@ namespace App_FrontEnd.Pages
                                 CoDriverName = entrant.CoDriverName;
                                 RaceNumber = entrant.RaceNumber;
                                 RaceClass = entrant.RaceClass;
-                                _logger.LogInformation("CrewDetail driver info loaded: {Driver} / {CoDriver} #{Number} Class {Class}", DriverName, CoDriverName, RaceNumber, RaceClass);
+                                OverallPosition = entrant.OverallPosition;
+                                ClassPosition = entrant.ClassPosition;
+                                _logger.LogInformation("CrewDetail driver info loaded: {Driver} / {CoDriver} #{Number} Class {Class} Overall={Overall} ClassPos={ClassPos}", DriverName, CoDriverName, RaceNumber, RaceClass, OverallPosition, ClassPosition);
                             }
                             else
                             {
@@ -137,6 +144,18 @@ namespace App_FrontEnd.Pages
                 "dsq" => "bg-dark",
                 _ => "bg-secondary"
             };
+        }
+
+        public string GetFlagUrl(string countryCode)
+        {
+            if (string.IsNullOrEmpty(countryCode)) return "";
+            var code = countryCode.ToLowerInvariant();
+            // Handle GB regions
+            if (code.StartsWith("gb"))
+            {
+                return $"/images/flags/4x3/{code}.svg";
+            }
+            return $"/images/flags/4x3/{code}.svg";
         }
     }
 }
