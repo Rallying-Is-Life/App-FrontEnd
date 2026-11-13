@@ -50,7 +50,7 @@
                 @foreach (var s in Model.Stages)
                 {
                     var rowClass = "";
-                    if (s.BogeyTimeHit || s.MaxTimeHit)
+                    if (s.BogeyTimeHit == true || s.MaxTimeHit == true)
                     {
                         rowClass = "table-danger";
                     }
@@ -70,13 +70,13 @@
                             }
                         </td>
                         <td class="text-center">
-                            @if (s.BogeyTimeHit)
+                            @if (s.BogeyTimeHit == true)
                             {
                                 <span class="badge bg-warning text-dark">Bogey Hit</span>
                             }
                         </td>
                         <td class="text-center">
-                            @if (s.MaxTimeHit)
+                            @if (s.MaxTimeHit == true)
                             {
                                 <span class="badge bg-danger">Max Time Hit</span>
                             }
