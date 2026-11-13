@@ -92,8 +92,8 @@ namespace App_FrontEnd.Pages
         public int? TimeSeconds { get; set; }
         public string Status { get; set; } = string.Empty;
         public string? RetirementReason { get; set; }
-        public bool BogeyTimeHit { get; set; }
-        public bool MaxTimeHit { get; set; }
+        public bool? BogeyTimeHit { get; set; }
+        public bool? MaxTimeHit { get; set; }
     }
 
     public class CrewDetailResponse
