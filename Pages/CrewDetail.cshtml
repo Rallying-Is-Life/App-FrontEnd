@@ -1,0 +1,97 @@
+@page
+@model App_FrontEnd.Pages.CrewDetail
+@{
+    ViewData["Title"] = "Crew Detail";
+}
+<div class="card-modern p-4 mb-4">
+    @if (!string.IsNullOrEmpty(Model.RallyName))
+    {
+        <h2>@Model.EventDate.Year @Model.RallyName</h2>
+        <p class="text-muted">Crew Stage Times Detail</p>
+    }
+    else
+    {
+        <h2>Crew Detail</h2>
+        <p class="text-muted">Stage Times Detail</p>
+    }
+
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h4>@Model.DriverName @(!string.IsNullOrEmpty(Model.CoDriverName) ? $" / {Model.CoDriverName}" : "")</h4>
+                    <p class="text-muted mb-1">Car #: <strong>@Model.RaceNumber</strong></p>
+                    <p class="text-muted mb-1">Class: <strong>@Model.RaceClass</strong></p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <p class="mb-1">Status: <span class="badge @Model.GetStatusBadgeClass(Model.Status)">@Model.Status</span></p>
+                    <p class="mb-1">Total Time: <strong>@Model.FormatTime(Model.TotalTimeSeconds)</strong></p>
+                    <p class="mb-1">Stages Completed: <strong>@Model.StagesCompleted / @Model.TotalStages</strong></p>
+                </div>
+            </div>
+            <a class="btn btn-sm btn-outline-secondary mt-2" href="/Leaderboard?id=@Model.RallyRowKey">← Back to Leaderboard</a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-sm table-striped table-hover table-bordered rounded table-container">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center" style="width:60px;">Stage</th>
+                    <th style="width:200px;">Stage Name</th>
+                    <th class="text-center" style="width:100px;">Type</th>
+                    <th class="text-center" style="width:120px;">Time</th>
+                    <th class="text-center" style="width:100px;">Status</th>
+                    <th class="text-center" style="width:100px;">Bogey</th>
+                    <th class="text-center" style="width:100px;">Max Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var s in Model.Stages)
+                {
+                    var rowClass = "";
+                    if (s.BogeyTimeHit || s.MaxTimeHit)
+                    {
+                        rowClass = "table-danger";
+                    }
+                    <tr class="@rowClass hover-lift">
+                        <td class="text-center fw-bold">SS@s.StageSequence</td>
+                        <td>@s.StageName</td>
+                        <td class="text-center">@s.StageType</td>
+                        <td class="text-center">@Model.FormatStageTime(s.TimeSeconds)</td>
+                        <td class="text-center">
+                            @if (!string.IsNullOrEmpty(s.Status))
+                            {
+                                <span class="badge @Model.GetStatusBadgeClass(s.Status)">@s.Status</span>
+                            }
+                            @if (!string.IsNullOrEmpty(s.RetirementReason))
+                            {
+                                <br /><small class="text-muted">@s.RetirementReason</small>
+                            }
+                        </td>
+                        <td class="text-center">
+                            @if (s.BogeyTimeHit)
+                            {
+                                <span class="badge bg-warning text-dark">Bogey Hit</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            @if (s.MaxTimeHit)
+                            {
+                                <span class="badge bg-danger">Max Time Hit</span>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.Stages.Count == 0)
+    {
+        <p class="text-muted">No stage times found for this entrant.</p>
+    }
+</div>
+<style>
+.hover-lift { transition: transform .15s ease, box-shadow .15s ease; }
+.hover-lift:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15); }
+</style>
