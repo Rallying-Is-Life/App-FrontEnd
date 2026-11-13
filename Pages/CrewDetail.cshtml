@@ -84,12 +84,20 @@
                             }
                         </td>
                         <td class="text-center">
+                            @if (s.BogeyTimeSeconds.HasValue)
+                            {
+                                <small>@Model.FormatStageTime(s.BogeyTimeSeconds)</small>
+                            }
                             @if (s.BogeyTimeHit == true)
                             {
                                 <span class="badge bg-warning text-dark">Bogey Hit</span>
                             }
                         </td>
                         <td class="text-center">
+                            @if (s.MaxTimeSeconds.HasValue)
+                            {
+                                <small>@Model.FormatStageTime(s.MaxTimeSeconds)</small>
+                            }
                             @if (s.MaxTimeHit == true)
                             {
                                 <span class="badge bg-danger">Max Time Hit</span>
