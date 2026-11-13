@@ -33,10 +33,14 @@ public class CarProfile : PageModel {
                     var lbData = await c.GetFromJsonAsync<LeaderboardResponse>($"{baseUrl}/leaderboard?id={rally.rallyRowKey}");
                     if (lbData != null)
                     {
-                        // Find the entrant for this car in this rally
-                        // The API doesn't directly link car to entrant, but we can try to match by make/model
-                        // For now, we'll leave position/status as null and they'll show as "—"
-                        // The API would need to be enhanced to support car->entrant lookup
+                        var entrant = lbData.Items.FirstOrDefault(x =>
+                            string.Equals(x.EntrantId, rally.EntrantId, StringComparison.OrdinalIgnoreCase));
+                        if (entrant != null)
+                        {
+                            rally.Status = entrant.Status;
+                            rally.OverallPosition = entrant.OverallPosition;
+                            rally.ClassPosition = entrant.ClassPosition;
+                        }
                     }
                 }
                 catch { }
@@ -48,6 +52,7 @@ public class CarProfile : PageModel {
         public string rallyName { get; set; } = ""; 
         public int year { get; set; } 
         public string rallyRowKey { get; set; } = ""; 
+        public string? EntrantId { get; set; }
         public string? Status { get; set; }
         public int? OverallPosition { get; set; }
         public int? ClassPosition { get; set; }
