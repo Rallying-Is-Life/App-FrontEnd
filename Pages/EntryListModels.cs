@@ -40,6 +40,8 @@ namespace App_FrontEnd.Pages
         public string? Region { get; set; }
         public string? FlagUrl { get; set; }
         public string? LogoUrl { get; set; }
+        public int FinishCount { get; set; }
+        public int RetireCount { get; set; }
     }
 
     public class StageInfo
@@ -50,5 +52,105 @@ namespace App_FrontEnd.Pages
         public string? FlagUrl { get; set; }
         public DateTimeOffset? StageDate { get; set; }
         public string? Leg { get; set; }
+    }
+
+    // Leaderboard models
+    public class LeaderboardItem
+    {
+        public int? OverallPosition { get; set; }
+        public int? ClassPosition { get; set; }
+        public string EntrantId { get; set; } = string.Empty;
+        public string DriverName { get; set; } = string.Empty;
+        public string CoDriverName { get; set; } = string.Empty;
+        public string RaceNumber { get; set; } = string.Empty;
+        public string RaceClass { get; set; } = string.Empty;
+        public string CarMake { get; set; } = string.Empty;
+        public string CarModel { get; set; } = string.Empty;
+        public int? TotalTimeSeconds { get; set; }
+        public int StagesCompleted { get; set; }
+        public int TotalStages { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public int? GapToOverallLeaderSeconds { get; set; }
+        public int? GapToCarInFrontSeconds { get; set; }
+        public int? GapToClassLeaderSeconds { get; set; }
+        public int? GapToNextInClassSeconds { get; set; }
+    }
+
+    public class LeaderboardResponse
+    {
+        public string RallyRowKey { get; set; } = string.Empty;
+        public int Count { get; set; }
+        public List<LeaderboardItem> Items { get; set; } = new();
+    }
+
+    // Crew detail models
+    public class StageTimeDetail
+    {
+        public int StageSequence { get; set; }
+        public string StageName { get; set; } = string.Empty;
+        public string StageType { get; set; } = string.Empty;
+        public int? TimeSeconds { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public string? RetirementReason { get; set; }
+        public bool BogeyTimeHit { get; set; }
+        public bool MaxTimeHit { get; set; }
+    }
+
+    public class CrewDetailResponse
+    {
+        public string RallyRowKey { get; set; } = string.Empty;
+        public string EntrantId { get; set; } = string.Empty;
+        public int? TotalTimeSeconds { get; set; }
+        public int StagesCompleted { get; set; }
+        public int TotalStages { get; set; }
+        public string Status { get; set; } = string.Empty;
+        public List<StageTimeDetail> Stages { get; set; } = new();
+    }
+
+    // Stage classification models
+    public class StageClassificationItem
+    {
+        public int Position { get; set; }
+        public string EntrantId { get; set; } = string.Empty;
+        public string DriverName { get; set; } = string.Empty;
+        public string CoDriverName { get; set; } = string.Empty;
+        public string RaceNumber { get; set; } = string.Empty;
+        public string RaceClass { get; set; } = string.Empty;
+        public int? TimeSeconds { get; set; }
+        public string Status { get; set; } = string.Empty;
+    }
+
+    public class StageClassificationResponse
+    {
+        public int StageSequence { get; set; }
+        public string StageName { get; set; } = string.Empty;
+        public List<StageClassificationItem> Items { get; set; } = new();
+    }
+
+    // Retirements models
+    public class RetirementItem
+    {
+        public string EntrantId { get; set; } = string.Empty;
+        public string DriverName { get; set; } = string.Empty;
+        public string CoDriverName { get; set; } = string.Empty;
+        public string RaceNumber { get; set; } = string.Empty;
+        public string RaceClass { get; set; } = string.Empty;
+        public string Status { get; set; } = string.Empty;
+        public string? RetirementReason { get; set; }
+        public int StagesCompleted { get; set; }
+    }
+
+    public class RetirementsResponse
+    {
+        public string RallyRowKey { get; set; } = string.Empty;
+        public int Count { get; set; }
+        public List<RetirementItem> Items { get; set; } = new();
+    }
+
+    // For stage selector dropdown
+    public class StageSelectorItem
+    {
+        public int StageNumber { get; set; }
+        public string StageName { get; set; } = string.Empty;
     }
 }

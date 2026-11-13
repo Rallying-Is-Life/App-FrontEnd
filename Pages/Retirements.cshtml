@@ -1,0 +1,83 @@
+@page
+@model App_FrontEnd.Pages.Retirements
+@{
+    ViewData["Title"] = "Retirements";
+    var hasClassFilter = !string.IsNullOrEmpty(Model.ClassId);
+}
+<div class="card-modern p-4 mb-4">
+    @if (!string.IsNullOrEmpty(Model.RallyName))
+    {
+        <h2>@Model.EventDate.Year @Model.RallyName</h2>
+        <p class="text-muted">Retirements @(hasClassFilter ? $"— Class: {Model.ClassId}" : "")</p>
+    }
+    else
+    {
+        <h2>Retirements</h2>
+        <p class="text-muted">Did Not Finish @(hasClassFilter ? $"— Class: {Model.ClassId}" : "")</p>
+    }
+
+    @* Class filter tabs *@
+    @if (Model.Entries.Any())
+    {
+        <ul class="nav nav-tabs mb-3" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link @(!hasClassFilter ? "active" : "")" href="/Retirements?id=@Model.RallyRowKey" role="tab">All Classes</a>
+            </li>
+            @{
+                var classes = Model.Entries.Where(e => !string.IsNullOrEmpty(e.RaceClass)).Select(e => e.RaceClass).Distinct().OrderBy(c => c);
+                foreach (var cls in classes)
+                {
+                    var isActive = string.Equals(cls, Model.ClassId, StringComparison.OrdinalIgnoreCase);
+                    <li class="nav-item" role="presentation">
+                        <a class="nav-link @(isActive ? "active" : "")" href="/Retirements?id=@Model.RallyRowKey&classId=@cls" role="tab">Class @cls</a>
+                    </li>
+                }
+            }
+        </ul>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-sm table-striped table-hover table-bordered rounded table-container">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-center" style="width:80px;">Car #</th>
+                    <th>Driver</th>
+                    <th>Co-Driver</th>
+                    <th class="text-center" style="width:100px;">Class</th>
+                    <th class="text-center" style="width:100px;">Stages Done</th>
+                    <th>Status / Reason</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model.Entries)
+                {
+                    <tr class="hover-lift">
+                        <td class="text-center fw-bold">@e.RaceNumber</td>
+                        <td>
+                            <a class="text-decoration-none" href="/CrewDetail?rallyRowKey=@Model.RallyRowKey&entrantId=@e.EntrantId">@e.DriverName</a>
+                        </td>
+                        <td>@e.CoDriverName</td>
+                        <td class="text-center">@e.RaceClass</td>
+                        <td class="text-center">@e.StagesCompleted</td>
+                        <td>
+                            <span class="badge bg-danger">@e.Status</span>
+                            @if (!string.IsNullOrEmpty(e.RetirementReason))
+                            {
+                                <br /><small class="text-muted">@e.RetirementReason</small>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.Entries.Count == 0)
+    {
+        <p class="text-muted">No retirements found for this rally.</p>
+    }
+    <p class="text-muted small mt-2">Total retirements: @Model.TotalCount</p>
+</div>
+<style>
+.hover-lift { transition: transform .15s ease, box-shadow .15s ease; }
+.hover-lift:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15); }
+</style>
