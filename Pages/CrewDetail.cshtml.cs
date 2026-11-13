@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Json;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace App_FrontEnd.Pages
 {
@@ -20,6 +21,13 @@ namespace App_FrontEnd.Pages
         public int TotalStages { get; set; }
         public string Status { get; set; } = string.Empty;
 
+        private readonly ILogger<CrewDetail> _logger;
+
+        public CrewDetail(ILogger<CrewDetail> logger)
+        {
+            _logger = logger;
+        }
+
         public async Task OnGetAsync()
         {
             RallyRowKey = Request.Query["rallyRowKey"].ToString();
@@ -30,6 +38,13 @@ namespace App_FrontEnd.Pages
 
             using var c = new HttpClient();
             var baseUrl = HttpContext.RequestServices.GetRequiredService<IConfiguration>()["apiRallyingIsLifeBaseURL"]?.TrimEnd('/') ?? "";
+            _logger.LogInformation("CrewDetail baseUrl={BaseUrl} rallyRowKey={RallyRowKey} entrantId={EntrantId}", baseUrl, RallyRowKey, EntrantId);
+
+            if (string.IsNullOrEmpty(baseUrl))
+            {
+                _logger.LogError("apiRallyingIsLifeBaseURL config is missing or empty");
+                return;
+            }
 
             // Get rally profile for name/date
             try
@@ -41,7 +56,10 @@ namespace App_FrontEnd.Pages
                     EventDate = rally.EventDate;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to fetch rally profile for {RallyRowKey}", RallyRowKey);
+            }
 
             // Get crew detail data
             try
@@ -54,10 +72,9 @@ namespace App_FrontEnd.Pages
                     StagesCompleted = data.StagesCompleted;
                     TotalStages = data.TotalStages;
                     Status = data.Status;
-                    
-                    // Get driver/co-driver names from first stage or we could call leaderboard for the specific entrant
-                    // The API response doesn't include driver/co-driver names, so we need to get them
-                    // We'll fetch from leaderboard to get those details
+                    _logger.LogInformation("CrewDetail entrant data loaded: stages={Count} totalTime={TotalTime} status={Status}", Stages.Count, TotalTimeSeconds, Status);
+
+                    // Get driver/co-driver names from leaderboard
                     try
                     {
                         var lbData = await c.GetFromJsonAsync<LeaderboardResponse>($"{baseUrl}/leaderboard?id={RallyRowKey}");
@@ -70,13 +87,24 @@ namespace App_FrontEnd.Pages
                                 CoDriverName = entrant.CoDriverName;
                                 RaceNumber = entrant.RaceNumber;
                                 RaceClass = entrant.RaceClass;
+                                _logger.LogInformation("CrewDetail driver info loaded: {Driver} / {CoDriver} #{Number} Class {Class}", DriverName, CoDriverName, RaceNumber, RaceClass);
+                            }
+                            else
+                            {
+                                _logger.LogWarning("Entrant {EntrantId} not found in leaderboard for {RallyRowKey}", EntrantId, RallyRowKey);
                             }
                         }
                     }
-                    catch { }
+                    catch (Exception ex)
+                    {
+                        _logger.LogError(ex, "Failed to fetch leaderboard for driver info: {RallyRowKey}", RallyRowKey);
+                    }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to fetch crew detail for {RallyRowKey}/{EntrantId}", RallyRowKey, EntrantId);
+            }
         }
 
         public string FormatTime(int? totalSeconds)
