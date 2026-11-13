@@ -70,5 +70,25 @@ namespace App_FrontEnd.Pages
                 return $"+{ts.Hours:D2}:{ts.Minutes:D2}:{ts.Seconds:D2}";
             return $"+{ts.Minutes:D2}:{ts.Seconds:D2}";
         }
+
+        public string FormatPosition(int? position, List<LeaderboardItem> entries)
+        {
+            if (!position.HasValue) return "—";
+            var pos = position.Value;
+            // A position shared by more than one entry is a tie — show "=3" style
+            var count = entries.Count(e => e.OverallPosition == pos);
+            return count > 1 ? $"={pos}" : pos.ToString();
+        }
+
+        public string FormatClassPosition(int? classPosition, string raceClass, List<LeaderboardItem> entries)
+        {
+            if (!classPosition.HasValue) return "—";
+            var pos = classPosition.Value;
+            // Tie within this class: same class position shared by more than one entry of the same class
+            var count = entries.Count(e =>
+                string.Equals(e.RaceClass, raceClass, StringComparison.OrdinalIgnoreCase) &&
+                e.ClassPosition == pos);
+            return count > 1 ? $"={pos}" : pos.ToString();
+        }
     }
 }

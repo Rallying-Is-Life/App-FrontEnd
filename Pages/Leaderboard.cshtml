@@ -55,8 +55,8 @@
                     var isFinished = string.Equals(e.Status, "Finished", StringComparison.OrdinalIgnoreCase);
                     var rowClass = isFinished ? "" : "table-warning";
                     <tr class="@rowClass hover-lift">
-                        <td class="text-center fw-bold">@(e.OverallPosition.HasValue ? e.OverallPosition.Value.ToString() : "—")</td>
-                        <td class="text-center">@(e.ClassPosition.HasValue ? e.ClassPosition.Value.ToString() : "—")</td>
+                        <td class="text-center fw-bold">@Model.FormatPosition(e.OverallPosition, Model.Entries)</td>
+                                            <td class="text-center">@Model.FormatClassPosition(e.ClassPosition, e.RaceClass, Model.Entries)</td>
                         <td class="text-center fw-bold">@e.RaceNumber</td>
                         <td>
                             <a class="text-decoration-none" href="/CrewDetail?rallyRowKey=@Model.RallyRowKey&entrantId=@e.EntrantId">@e.DriverName</a>
