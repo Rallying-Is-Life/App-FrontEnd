@@ -136,7 +136,7 @@ namespace App_FrontEnd.Pages
             {
                 "finished" => "bg-success",
                 "retired" => "bg-danger",
-                "running" => "bg-primary",
+                "running" => "bg-info",
                 "superrally" => "bg-info text-dark",
                 "excluded" => "bg-dark",
                 "dns" => "bg-secondary",
