@@ -49,16 +49,16 @@
                     <p class="card-text">
                         <strong>Entries:</strong> @Model.EntryCount
                     </p>
+                    @if (!string.IsNullOrEmpty(Model.Country))
+                    {
+                        <p class="card-text"><strong>Country:</strong> <span><img src="@Model.FlagUrl" alt="Flag" style="height:20px; width:auto; margin-left:8px;" /></span></p>
+                    }
                     @if (Model.EntryCount > 0)
                     {
                         <div class="d-flex gap-2 flex-wrap mt-2">
                             <a class="btn btn-sm btn-outline-primary" href="/EntryListSeeded?id=@Model.RallyRowKey">Entry List (Seeded)</a>
                             <a class="btn btn-sm btn-outline-secondary" href="/EntryListUnseeded?id=@Model.RallyRowKey">Entry List (Unseeded)</a>
                         </div>
-                    }
-                    @if (!string.IsNullOrEmpty(Model.Country))
-                    {
-                        <p class="card-text"><strong>Country:</strong> <span><img src="@Model.FlagUrl" alt="Flag" style="height:20px; width:auto; margin-left:8px;" /></span></p>
                     }
                 </div>
             </div>
