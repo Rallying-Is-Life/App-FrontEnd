@@ -49,6 +49,7 @@ namespace App_FrontEnd.Pages
         public int StageNumber { get; set; }
         public string StageName { get; set; } = string.Empty;
         public string StageLength { get; set; } = string.Empty;
+        public string StageType { get; set; } = string.Empty;
         public string? FlagUrl { get; set; }
         public DateTimeOffset? StageDate { get; set; }
         public string? Leg { get; set; }
@@ -94,6 +95,8 @@ namespace App_FrontEnd.Pages
         public string? RetirementReason { get; set; }
         public bool? BogeyTimeHit { get; set; }
         public bool? MaxTimeHit { get; set; }
+        public int? BogeyTimeSeconds { get; set; }
+        public int? MaxTimeSeconds { get; set; }
     }
 
     public class CrewDetailResponse
