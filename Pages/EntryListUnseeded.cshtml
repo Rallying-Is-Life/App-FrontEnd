@@ -1,0 +1,53 @@
+@page
+@model App_FrontEnd.Pages.EntryListUnseeded
+@{
+    ViewData["Title"] = "Entry List - Unseeded";
+}
+<div class="card-modern p-4 mb-4">
+    @if (!string.IsNullOrEmpty(Model.RallyName))
+    {
+        <h2>@Model.EventDate.Year @Model.RallyName</h2>
+        <p class="text-muted">Entry List (Alphabetical by Driver)</p>
+    }
+    else
+    {
+        <h2>Entry List - Unseeded</h2>
+        <p class="text-muted">Alphabetical by Driver</p>
+    }
+
+    <div class="table-responsive">
+        <table class="table table-sm table-striped table-hover table-bordered rounded table-container">
+            <thead class="table-dark">
+                <tr>
+                    <th>Driver</th>
+                    <th>Co-Driver</th>
+                    <th>Car</th>
+                    <th class="text-center">Registration</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var e in Model.Entries)
+                {
+                    <tr>
+                        <td>@e.Driver</td>
+                        <td>@e.CoDriver</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(e.Car.LogoUrl))
+                            {
+                                <img src="@e.Car.LogoUrl" alt="@e.Car.Make" style="height:22px; object-fit:contain;" onerror="this.style.display='none'" />
+                            }
+                            <strong>@e.Car.Make @e.Car.Model</strong>
+                        </td>
+                        <td class="text-center"><span class="reg-plate">@e.Registration</span></td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    @if (Model.Entries.Count == 0)
+    {
+        <p class="text-muted">No entries found for this rally.</p>
+    }
+    <p class="text-muted small mt-2">Total entries: @Model.EntryCount</p>
+</div>
+<link rel="stylesheet" href="~/css/reg-plate.css" />
