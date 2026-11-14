@@ -24,17 +24,27 @@
                         {
                             <img src="@Model.GetFlagUrl(Model.DriverCountry)" class="flag-icon me-2" style="width:24px;height:16px;" alt="@Model.DriverCountry" />
                         }
-                        @Model.DriverName @(!string.IsNullOrEmpty(Model.CoDriverName) ? $" / {Model.CoDriverName}" : "")
+                        @Model.DriverName
                     </h4>
+                    @if (!string.IsNullOrEmpty(Model.CoDriverName))
+                    {
+                        <h5 class="text-muted">
+                            @if (!string.IsNullOrEmpty(Model.CoDriverCountry))
+                            {
+                                <img src="@Model.GetFlagUrl(Model.CoDriverCountry)" class="flag-icon me-2" style="width:20px;height:14px;" alt="@Model.CoDriverCountry" />
+                            }
+                            @Model.CoDriverName
+                        </h5>
+                    }
                     <p class="text-muted mb-1">Car #: <strong>@Model.RaceNumber</strong></p>
                     <p class="text-muted mb-1">Class: <strong>@Model.RaceClass</strong></p>
                     @if (Model.OverallPosition.HasValue)
                     {
-                        <p class="text-muted mb-1">Overall: <strong>@Model.OverallPosition</strong></p>
+                        <p class="text-muted mb-1">Overall: <strong>@Model.OverallPosition@Model.GetTrophyEmoji(Model.OverallPosition)</strong></p>
                     }
                     @if (Model.ClassPosition.HasValue)
                     {
-                        <p class="text-muted mb-1">Class: <strong>@Model.ClassPosition</strong></p>
+                        <p class="text-muted mb-1">Class: <strong>@Model.ClassPosition@Model.GetTrophyEmoji(Model.ClassPosition)</strong></p>
                     }
                 </div>
                 <div class="col-md-6 text-md-end">

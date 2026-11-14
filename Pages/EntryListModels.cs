@@ -75,6 +75,8 @@ namespace App_FrontEnd.Pages
         public int? GapToCarInFrontSeconds { get; set; }
         public int? GapToClassLeaderSeconds { get; set; }
         public int? GapToNextInClassSeconds { get; set; }
+        public string DriverNat { get; set; } = string.Empty;
+        public string CoDriverNat { get; set; } = string.Empty;
     }
 
     public class LeaderboardResponse
