@@ -50,23 +50,7 @@ namespace App_FrontEnd.Pages
                 return;
             }
 
-            // Get rally profile for name/date
-            try
-            {
-                var rally = await c.GetFromJsonAsync<RallyProfileItem>($"{baseUrl}/profiles/rally?id={RallyRowKey}");
-                if (rally != null)
-                {
-                    RallyName = rally.RallyName;
-                    EventDate = rally.EventDate;
-                    DriverCountry = rally.Country ?? string.Empty;
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Failed to fetch rally profile for {RallyRowKey}", RallyRowKey);
-            }
-
-            // Get crew detail data
+            // Get crew detail data (includes stages, status, total time)
             try
             {
                 var data = await c.GetFromJsonAsync<CrewDetailResponse>($"{baseUrl}/leaderboard/entrant?id={RallyRowKey}&entrantId={EntrantId}");
@@ -78,39 +62,56 @@ namespace App_FrontEnd.Pages
                     TotalStages = data.TotalStages;
                     Status = data.Status;
                     _logger.LogInformation("CrewDetail entrant data loaded: stages={Count} totalTime={TotalTime} status={Status}", Stages.Count, TotalTimeSeconds, Status);
-
-                    // Get driver/co-driver names from leaderboard
-                    try
-                    {
-                        var lbData = await c.GetFromJsonAsync<LeaderboardResponse>($"{baseUrl}/leaderboard?id={RallyRowKey}");
-                        if (lbData != null)
-                        {
-                            var entrant = lbData.Items.FirstOrDefault(x => string.Equals(x.EntrantId, EntrantId, StringComparison.OrdinalIgnoreCase));
-                            if (entrant != null)
-                            {
-                                DriverName = entrant.DriverName;
-                                CoDriverName = entrant.CoDriverName;
-                                RaceNumber = entrant.RaceNumber;
-                                RaceClass = entrant.RaceClass;
-                                OverallPosition = entrant.OverallPosition;
-                                ClassPosition = entrant.ClassPosition;
-                                _logger.LogInformation("CrewDetail driver info loaded: {Driver} / {CoDriver} #{Number} Class {Class} Overall={Overall} ClassPos={ClassPos}", DriverName, CoDriverName, RaceNumber, RaceClass, OverallPosition, ClassPosition);
-                            }
-                            else
-                            {
-                                _logger.LogWarning("Entrant {EntrantId} not found in leaderboard for {RallyRowKey}", EntrantId, RallyRowKey);
-                            }
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        _logger.LogError(ex, "Failed to fetch leaderboard for driver info: {RallyRowKey}", RallyRowKey);
-                    }
                 }
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to fetch crew detail for {RallyRowKey}/{EntrantId}", RallyRowKey, EntrantId);
+            }
+
+            // Get rally profile for name/date
+            try
+            {
+                var rally = await c.GetFromJsonAsync<RallyProfileItem>($"{baseUrl}/profiles/rally?id={RallyRowKey}");
+                if (rally != null)
+                {
+                    RallyName = rally.RallyName;
+                    EventDate = rally.EventDate;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to fetch rally profile for {RallyRowKey}", RallyRowKey);
+            }
+
+            // Get driver/co-driver info from leaderboard (includes nationality for flags)
+            try
+            {
+                var lbData = await c.GetFromJsonAsync<LeaderboardResponse>($"{baseUrl}/leaderboard?id={RallyRowKey}");
+                if (lbData != null)
+                {
+                    var entrant = lbData.Items.FirstOrDefault(x => string.Equals(x.EntrantId, EntrantId, StringComparison.OrdinalIgnoreCase));
+                    if (entrant != null)
+                    {
+                        DriverName = entrant.DriverName;
+                        CoDriverName = entrant.CoDriverName;
+                        RaceNumber = entrant.RaceNumber;
+                        RaceClass = entrant.RaceClass;
+                        OverallPosition = entrant.OverallPosition;
+                        ClassPosition = entrant.ClassPosition;
+                        DriverCountry = entrant.DriverNat ?? string.Empty;
+                        CoDriverCountry = entrant.CoDriverNat ?? string.Empty;
+                        _logger.LogInformation("CrewDetail driver info loaded: {Driver} / {CoDriver} #{Number} Class {Class} Overall={Overall} ClassPos={ClassPos}", DriverName, CoDriverName, RaceNumber, RaceClass, OverallPosition, ClassPosition);
+                    }
+                    else
+                    {
+                        _logger.LogWarning("Entrant {EntrantId} not found in leaderboard for {RallyRowKey}", EntrantId, RallyRowKey);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to fetch leaderboard for driver info: {RallyRowKey}", RallyRowKey);
             }
         }
 
@@ -156,6 +157,17 @@ namespace App_FrontEnd.Pages
                 return $"/images/flags/4x3/{code}.svg";
             }
             return $"/images/flags/4x3/{code}.svg";
+        }
+
+        public string GetTrophyEmoji(int? position)
+        {
+            return position switch
+            {
+                1 => " 🥇",
+                2 => " 🥈",
+                3 => " 🥉",
+                _ => ""
+            };
         }
     }
 }
