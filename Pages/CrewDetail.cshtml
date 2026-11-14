@@ -25,17 +25,16 @@
                             <img src="@Model.GetFlagUrl(Model.DriverCountry)" class="flag-icon me-2" style="width:24px;height:16px;" alt="@Model.DriverCountry" />
                         }
                         @Model.DriverName
-                    </h4>
-                    @if (!string.IsNullOrEmpty(Model.CoDriverName))
-                    {
-                        <h5 class="text-muted">
+                        @if (!string.IsNullOrEmpty(Model.CoDriverName))
+                        {
+                            <text> / </text>
                             @if (!string.IsNullOrEmpty(Model.CoDriverCountry))
                             {
                                 <img src="@Model.GetFlagUrl(Model.CoDriverCountry)" class="flag-icon me-2" style="width:20px;height:14px;" alt="@Model.CoDriverCountry" />
                             }
                             @Model.CoDriverName
-                        </h5>
-                    }
+                        }
+                    </h4>
                     <p class="text-muted mb-1">Car #: <strong>@Model.RaceNumber</strong></p>
                     <p class="text-muted mb-1">Class: <strong>@Model.RaceClass</strong></p>
                     @if (Model.OverallPosition.HasValue)
