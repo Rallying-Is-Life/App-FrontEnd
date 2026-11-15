@@ -13,9 +13,33 @@ ViewData["Title"] = "Car Profile";
 <div class="card">
 <div class="card-body">
 <h5>Events</h5>
-<table class="table table-striped table-hover align-middle"><thead class="table-dark"><tr><th>Year</th><th>Rally</th></tr></thead>
+<table class="table table-striped table-hover align-middle"><thead class="table-dark"><tr><th>Year</th><th>Rally</th><th class="text-center">Status</th><th class="text-center">Overall Pos</th><th class="text-center">Class Pos</th></tr></thead>
 <tbody>
-@foreach(var r in Model.Rallies) { <tr><td>@r.year</td><td><a class="text-decoration-none" href="/RallyProfile?id=@r.rallyRowKey">@r.rallyName</a></td></tr> }
+@foreach(var r in Model.Rallies) { 
+    <tr>
+        <td>@r.year</td>
+        <td><a class="text-decoration-none" href="/RallyProfile?id=@r.rallyRowKey">@r.rallyName</a></td>
+        <td class="text-center">
+            @if (!string.IsNullOrEmpty(r.Status))
+            {
+                <span class="badge @(r.Status.ToLowerInvariant() switch {
+                    "finished" => "bg-success",
+                    "retired" => "bg-danger",
+                    "running" => "bg-primary",
+                    "superrally" => "bg-info text-dark",
+                    "excluded" => "bg-dark",
+                    _ => "bg-secondary"
+                })">@r.Status</span>
+            }
+            else
+            {
+                <span class="text-muted">—</span>
+            }
+        </td>
+        <td class="text-center">@(r.OverallPosition.HasValue ? r.OverallPosition.Value.ToString() : "—")</td>
+        <td class="text-center">@(r.ClassPosition.HasValue ? r.ClassPosition.Value.ToString() : "—")</td>
+    </tr>
+}
 </tbody></table>
 </div>
 </div>
