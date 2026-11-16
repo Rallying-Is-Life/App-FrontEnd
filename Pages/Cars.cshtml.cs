@@ -2,9 +2,20 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Text;
+using System.Globalization;
 namespace App_FrontEnd.Pages;
 class CountResp { public int count { get; set; } }
 public class CarsModel : PageModel {
+    public static string LogoKey(string make) {
+        if (string.IsNullOrEmpty(make)) return "";
+        var normalized = make.Normalize(NormalizationForm.FormD);
+        var sb = new StringBuilder();
+        foreach (var c in normalized) {
+            if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark) sb.Append(c);
+        }
+        return sb.ToString().Normalize(NormalizationForm.FormC).ToLowerInvariant();
+    }
     public List<CarItem> Cars { get; set; } = new();
     public int Page { get; set; } = 1;
     [BindProperty(SupportsGet = true, Name = "p")]
