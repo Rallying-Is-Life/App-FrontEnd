@@ -53,7 +53,10 @@
                 @foreach (var e in Model.Entries)
                 {
                     var isFinished = string.Equals(e.Status, "Finished", StringComparison.OrdinalIgnoreCase);
-                    var rowClass = isFinished ? "" : "table-warning";
+                    var isRetiredOrExcluded = string.Equals(e.Status, "Retired", StringComparison.OrdinalIgnoreCase) || 
+                                             string.Equals(e.Status, "Excluded", StringComparison.OrdinalIgnoreCase) ||
+                                             string.Equals(e.Status, "SuperRally", StringComparison.OrdinalIgnoreCase);
+                    var rowClass = isRetiredOrExcluded ? "table-warning" : "";
                     <tr class="@rowClass hover-lift">
                         <td class="text-center fw-bold">@Model.FormatPosition(e.OverallPosition, Model.Entries)</td>
                                             <td class="text-center">@Model.FormatClassPosition(e.ClassPosition, e.RaceClass, Model.Entries)</td>
