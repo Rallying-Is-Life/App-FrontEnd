@@ -55,20 +55,23 @@ namespace App_FrontEnd.Pages
             catch { }
         }
 
-        public string FormatTime(int? totalSeconds)
+        public string FormatTime(double? totalSeconds)
         {
             if (!totalSeconds.HasValue) return "—";
             var ts = TimeSpan.FromSeconds(totalSeconds.Value);
-            return $"{ts.Hours:D2}:{ts.Minutes:D2}:{ts.Seconds:D2}";
+            if (ts.TotalHours >= 1)
+                return $"{ts.Hours:D2}:{ts.Minutes:D2}:{ts.Seconds:D2}.{ts.Milliseconds:D3}".TrimEnd('0').TrimEnd('.');
+            return $"{ts.Minutes:D2}:{ts.Seconds:D2}.{ts.Milliseconds:D3}".TrimEnd('0').TrimEnd('.');
         }
 
-        public string FormatGap(int? gapSeconds)
+        public string FormatGap(double? gapSeconds)
         {
             if (!gapSeconds.HasValue) return "—";
+            if (gapSeconds.Value == 0) return "+00:00.000".TrimEnd('0').TrimEnd('.');
             var ts = TimeSpan.FromSeconds(gapSeconds.Value);
             if (ts.TotalHours >= 1)
-                return $"+{ts.Hours:D2}:{ts.Minutes:D2}:{ts.Seconds:D2}";
-            return $"+{ts.Minutes:D2}:{ts.Seconds:D2}";
+                return $"+{ts.Hours:D2}:{ts.Minutes:D2}:{ts.Seconds:D2}.{ts.Milliseconds:D3}".TrimEnd('0').TrimEnd('.');
+            return $"+{ts.Minutes:D2}:{ts.Seconds:D2}.{ts.Milliseconds:D3}".TrimEnd('0').TrimEnd('.');
         }
 
         public string FormatPosition(int? position, List<LeaderboardItem> entries)
