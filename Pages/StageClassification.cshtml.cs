@@ -79,13 +79,13 @@ namespace App_FrontEnd.Pages
             }
         }
 
-        public string FormatTime(int? seconds)
+        public string FormatTime(double? seconds)
         {
             if (!seconds.HasValue) return "—";
             var ts = TimeSpan.FromSeconds(seconds.Value);
             if (ts.TotalHours >= 1)
-                return $"{ts.Hours:D2}:{ts.Minutes:D2}:{ts.Seconds:D2}";
-            return $"{ts.Minutes:D2}:{ts.Seconds:D2}";
+                return $"{ts.Hours:D2}:{ts.Minutes:D2}:{ts.Seconds:D2}.{ts.Milliseconds:D3}".TrimEnd('0').TrimEnd('.');
+            return $"{ts.Minutes:D2}:{ts.Seconds:D2}.{ts.Milliseconds:D3}".TrimEnd('0').TrimEnd('.');
         }
     }
 }
