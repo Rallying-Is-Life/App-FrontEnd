@@ -20,7 +20,7 @@ namespace App_FrontEnd.Pages
         public string DriverCountry { get; set; } = string.Empty;
         public string CoDriverCountry { get; set; } = string.Empty;
         public List<StageTimeDetail> Stages { get; set; } = new();
-        public int? TotalTimeSeconds { get; set; }
+        public double? TotalTimeSeconds { get; set; }
         public int StagesCompleted { get; set; }
         public int TotalStages { get; set; }
         public string Status { get; set; } = string.Empty;
@@ -115,20 +115,22 @@ namespace App_FrontEnd.Pages
             }
         }
 
-        public string FormatTime(int? totalSeconds)
+        public string FormatTime(double? totalSeconds)
         {
             if (!totalSeconds.HasValue) return "—";
             var ts = TimeSpan.FromSeconds(totalSeconds.Value);
-            return $"{ts.Hours:D2}:{ts.Minutes:D2}:{ts.Seconds:D2}";
+            if (ts.TotalHours >= 1)
+                return $"{ts.Hours:D2}:{ts.Minutes:D2}:{ts.Seconds:D2}.{ts.Milliseconds:D3}".TrimEnd('0').TrimEnd('.');
+            return $"{ts.Minutes:D2}:{ts.Seconds:D2}.{ts.Milliseconds:D3}".TrimEnd('0').TrimEnd('.');
         }
 
-        public string FormatStageTime(int? seconds)
+        public string FormatStageTime(double? seconds)
         {
             if (!seconds.HasValue) return "—";
             var ts = TimeSpan.FromSeconds(seconds.Value);
             if (ts.TotalHours >= 1)
-                return $"{ts.Hours:D2}:{ts.Minutes:D2}:{ts.Seconds:D2}";
-            return $"{ts.Minutes:D2}:{ts.Seconds:D2}";
+                return $"{ts.Hours:D2}:{ts.Minutes:D2}:{ts.Seconds:D2}.{ts.Milliseconds:D3}".TrimEnd('0').TrimEnd('.');
+            return $"{ts.Minutes:D2}:{ts.Seconds:D2}.{ts.Milliseconds:D3}".TrimEnd('0').TrimEnd('.');
         }
 
         public string GetStatusBadgeClass(string status)
