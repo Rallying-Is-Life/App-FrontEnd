@@ -1,0 +1,73 @@
+@page
+@model App_FrontEnd.Pages.PersonProfile
+@{
+    ViewData["Title"] = "Person Profile";
+}
+<div class="card-modern p-4 mb-4">
+    <h2>Person Profile</h2>
+    <div class="row align-items-center g-3 mb-3">
+        <div class="col">
+            <h3 class="mb-1">@Model.FirstName @Model.Surname</h3>
+            <p class="card-text mb-0">
+                Nationality: @Model.Nationality
+                @if (!string.IsNullOrEmpty(Model.FlagUrl))
+                {
+                    <img src="@Model.FlagUrl" alt="Flag" style="height:20px; width:auto; margin-left:8px;" />
+                }
+            </p>
+        </div>
+    </div>
+    <div class="row g-3">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <h5>Events</h5>
+                    @if (Model.Events.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover align-middle">
+                                <thead class="table-dark">
+                                    <tr>
+                                        <th>Year</th>
+                                        <th>Rally</th>
+                                        <th>Role</th>
+                                        <th>Partner</th>
+                                        <th>Car</th>
+                                        <th>VRM</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var e in Model.Events)
+                                    {
+                                        <tr>
+                                            <td>@e.year</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(e.rallyRowKey))
+                                                {
+                                                    <a class="text-decoration-none" href="/RallyProfile?id=@e.rallyRowKey">@e.rallyName</a>
+                                                }
+                                                else
+                                                {
+                                                    <span>@e.rallyName</span>
+                                                }
+                                            </td>
+                                            <td>@e.role</td>
+                                            <td>@(string.IsNullOrEmpty(e.partnerName) ? "—" : e.partnerName)</td>
+                                            <td>@(string.IsNullOrEmpty(e.carMake) ? "—" : $"{e.carMake} @e.carModel")</td>
+                                            <td>@(string.IsNullOrEmpty(e.carVrm) ? "—" : e.carVrm)</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted">No events found.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
