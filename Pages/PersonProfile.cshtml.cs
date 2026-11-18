@@ -3,6 +3,8 @@ using Microsoft.Extensions.Configuration;
 using System.Net.Http.Json;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Globalization;
 
 namespace App_FrontEnd.Pages;
 public class PersonProfile : PageModel
@@ -29,6 +31,18 @@ public class PersonProfile : PageModel
         }
     }
 
+    public static string LogoKey(string make)
+    {
+        if (string.IsNullOrEmpty(make)) return "";
+        var normalized = make.Normalize(NormalizationForm.FormD);
+        var sb = new StringBuilder();
+        foreach (var c in normalized)
+        {
+            if (CharUnicodeInfo.GetUnicodeCategory(c) != UnicodeCategory.NonSpacingMark) sb.Append(c);
+        }
+        return sb.ToString().Normalize(NormalizationForm.FormC).ToLowerInvariant();
+    }
+
     public class PersonEvent
     {
         public int year { get; set; }
@@ -39,6 +53,9 @@ public class PersonProfile : PageModel
         public string carMake { get; set; } = "";
         public string carModel { get; set; } = "";
         public string carVrm { get; set; } = "";
+        public string status { get; set; } = "";
+        public int? overallPosition { get; set; }
+        public int? classPosition { get; set; }
     }
 
     public class PersonProfileApiResponse

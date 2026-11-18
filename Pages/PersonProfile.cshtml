@@ -1,5 +1,6 @@
 @page
 @model App_FrontEnd.Pages.PersonProfile
+@using App_FrontEnd.Pages
 @{
     ViewData["Title"] = "Person Profile";
 }
@@ -34,11 +35,17 @@
                                         <th>Partner</th>
                                         <th>Car</th>
                                         <th>VRM</th>
+                                        <th class="text-center">Status</th>
+                                        <th class="text-center">Overall</th>
+                                        <th class="text-center">Class</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     @foreach (var e in Model.Events)
                                     {
+                                        var logoKey = string.IsNullOrEmpty(e.carMake) ? "" : PersonProfile.LogoKey(e.carMake);
+                                        var storageAccount = Environment.GetEnvironmentVariable("StorageAccountName") ?? "rallyingislife";
+                                        var logoUrl = $"https://{storageAccount}.blob.core.windows.net/mfrlogo/{logoKey}.png";
                                         <tr>
                                             <td>@e.year</td>
                                             <td>
@@ -53,8 +60,38 @@
                                             </td>
                                             <td>@e.role</td>
                                             <td>@(string.IsNullOrEmpty(e.partnerName) ? "—" : e.partnerName)</td>
-                                            <td>@(string.IsNullOrEmpty(e.carMake) ? "—" : $"{e.carMake} @e.carModel")</td>
+                                            <td>
+                                                @if (!string.IsNullOrEmpty(e.carMake))
+                                                {
+                                                    <img src="@logoUrl" alt="@e.carMake" style="height:22px; width:auto; object-fit:contain; vertical-align:middle; margin-right:6px;" onerror="this.style.display='none'" />
+                                                    <strong>@e.carMake @e.carModel</strong>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">—</span>
+                                                }
+                                            </td>
                                             <td>@(string.IsNullOrEmpty(e.carVrm) ? "—" : e.carVrm)</td>
+                                            <td class="text-center">
+                                                @if (!string.IsNullOrEmpty(e.status))
+                                                {
+                                                    var badgeClass = e.status.ToLowerInvariant() switch {
+                                                        "finished" => "bg-success",
+                                                        "retired" => "bg-danger",
+                                                        "running" => "bg-primary",
+                                                        "superrally" => "bg-info text-dark",
+                                                        "excluded" => "bg-dark",
+                                                        _ => "bg-secondary"
+                                                    };
+                                                    <span class="badge @badgeClass">@e.status</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="text-muted">—</span>
+                                                }
+                                            </td>
+                                            <td class="text-center">@(e.overallPosition.HasValue ? e.overallPosition.Value.ToString() : "—")</td>
+                                            <td class="text-center">@(e.classPosition.HasValue ? e.classPosition.Value.ToString() : "—")</td>
                                         </tr>
                                     }
                                 </tbody>
