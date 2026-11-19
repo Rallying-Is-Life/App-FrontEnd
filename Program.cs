@@ -15,11 +15,12 @@ var clientId = Environment.GetEnvironmentVariable("ClientID")
     ?? Environment.GetEnvironmentVariable("AzureAd__ClientId") ?? "";
 var clientSecret = Environment.GetEnvironmentVariable("ClientSecret")
     ?? Environment.GetEnvironmentVariable("AzureAd__ClientSecret") ?? "";
-// Downstream API scope for OBO token acquisition (e.g. "Api.Read,Api.Write").
-// Split on ',' so multiple scopes may be configured in one env var.
+// Downstream API scope for token acquisition (full format: api://<api-client-id>/Scope).
+// Fallback uses API client ID from env var if provided, otherwise bare scopes (legacy).
+var apiClientId = Environment.GetEnvironmentVariable("ApiClientId") ?? "";
 var downstreamScopesRaw = Environment.GetEnvironmentVariable("DownstreamApiScopes")
     ?? Environment.GetEnvironmentVariable("DownstreamApiScope")
-    ?? "Api.Read,Api.Write";
+    ?? (string.IsNullOrEmpty(apiClientId) ? "Api.Read,Api.Write" : $"api://{apiClientId}/Api.Read,api://{apiClientId}/Api.Write");
 var downstreamScopes = downstreamScopesRaw.Split(',').Select(s => s.Trim()).ToArray();
 
 // Map env vars to AzureAd config section for Microsoft.Identity.Web token acquisition
@@ -48,11 +49,27 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownProxies.Clear();
 });
 
+// Distributed cache for session token cache (survives restarts/scale-out)
+// Requires REDIS_CONNECTION_STRING env var in Azure App Service
+var redisConn = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
+if (!string.IsNullOrEmpty(redisConn))
+{
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = redisConn;
+        options.InstanceName = "RallyingIsLife:";
+    });
+}
+else
+{
+    // Fallback: in-memory (dev only) - does NOT survive restarts
+    builder.Services.AddDistributedMemoryCache();
+}
+
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
     .EnableTokenAcquisitionToCallDownstreamApi(downstreamScopes)
-    .AddSessionTokenCaches()
-    .AddMicrosoftIdentityConsentHandler(); // Handles consent/conditional access challenges for Razor Pages
+    .AddDistributedTokenCaches(); // Uses distributed cache (Redis or memory)
 
 // Configure OpenIdConnect options for correlation cookie behind load balancer
 builder.Services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
@@ -76,7 +93,7 @@ builder.Services.AddCors(options => options.AddPolicy("AllowFE", p => p.WithOrig
 
 builder.Services.AddAuthorization();
 
-// Session required by AddSessionTokenCaches() (stores OBO tokens in session).
+// Session required by AddDistributedTokenCaches() (stores OBO tokens in distributed cache).
 builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;
@@ -105,13 +122,15 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
+
+// CORS between UseRouting and UseAuthentication (handles preflights on protected endpoints)
+app.UseCors("AllowFE");
+
 app.UseCookiePolicy();
 app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseCors("AllowFE");
 
 app.MapStaticAssets();
 app.MapRazorPages()

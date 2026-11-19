@@ -52,7 +52,7 @@ public class UserProfile : PageModel
         await LoadReferenceDataAsync();
 
         var baseUrl = (_configuration["apiRallyingIsLifeBaseURL"] ?? "").TrimEnd('/');
-        var scopes = _configuration["DownstreamApiScopes"]?.Split(',').Select(s => s.Trim()).ToArray() ?? new[] { "Api.Write" };
+        var scopes = GetScopes("Write");
 
         try
         {
@@ -81,6 +81,12 @@ public class UserProfile : PageModel
                 ErrorMessage = $"Failed to update profile: {response.StatusCode} - {errorContent}";
             }
         }
+        catch (MicrosoftIdentityWebChallengeUserException ex)
+        {
+            // Consent/conditional access required - the registered AddMicrosoftIdentityConsentHandler
+            // will handle the challenge via the Account controller
+            throw; // Re-throw to let the consent handler process it
+        }
         catch (Exception ex)
         {
             ErrorMessage = $"Error updating profile: {ex.Message}";
@@ -89,10 +95,21 @@ public class UserProfile : PageModel
         return Page();
     }
 
+    private string[] GetScopes(string operation)
+    {
+        var apiClientId = _configuration["ApiClientId"] ?? "";
+        if (!string.IsNullOrEmpty(apiClientId))
+        {
+            return new[] { $"api://{apiClientId}/Api.{operation}" };
+        }
+        // Fallback to bare scopes (legacy)
+        return new[] { $"Api.{operation}" };
+    }
+
     private async Task LoadReferenceDataAsync()
     {
         var baseUrl = (_configuration["apiRallyingIsLifeBaseURL"] ?? "").TrimEnd('/');
-        var scopes = _configuration["DownstreamApiScopes"]?.Split(',').Select(s => s.Trim()).ToArray() ?? new[] { "Api.Read" };
+        var scopes = GetScopes("Read");
 
         try
         {
@@ -127,6 +144,11 @@ public class UserProfile : PageModel
             Countries = new SelectList(countryList, "Code", "Name");
             Regions = new SelectList(new List<string> { "England", "Scotland", "Wales", "Northern Ireland" });
         }
+        catch (MicrosoftIdentityWebChallengeUserException)
+        {
+            // Consent required - re-throw to let the consent handler process it
+            throw;
+        }
         catch
         {
             Countries = new SelectList(new List<CountryItem> { new() { Code = "GB", Name = "United Kingdom" } }, "Code", "Name");
@@ -137,7 +159,7 @@ public class UserProfile : PageModel
     private async Task LoadProfileAsync()
     {
         var baseUrl = (_configuration["apiRallyingIsLifeBaseURL"] ?? "").TrimEnd('/');
-        var scopes = _configuration["DownstreamApiScopes"]?.Split(',').Select(s => s.Trim()).ToArray() ?? new[] { "Api.Read" };
+        var scopes = GetScopes("Read");
 
         try
         {
@@ -167,6 +189,11 @@ public class UserProfile : PageModel
             {
                 ErrorMessage = $"Failed to load profile: {response.StatusCode}";
             }
+        }
+        catch (MicrosoftIdentityWebChallengeUserException)
+        {
+            // Consent required - re-throw to let the consent handler process it
+            throw;
         }
         catch (Exception ex)
         {
