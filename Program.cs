@@ -4,8 +4,6 @@ using Microsoft.Identity.Web.UI;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages();
-
 // Azure AD / Entra External ID settings (from web-app settings, never committed)
 var instance = Environment.GetEnvironmentVariable("AzureAd__Instance") ?? "https://login.microsoftonline.com";
 var tenantId = Environment.GetEnvironmentVariable("TenantID")
@@ -22,21 +20,26 @@ var downstreamScopesRaw = Environment.GetEnvironmentVariable("DownstreamApiScope
     ?? "Api.Read,Api.Write";
 var downstreamScopes = downstreamScopesRaw.Split(',').Select(s => s.Trim()).ToArray();
 
+// Map env vars to AzureAd config section for Microsoft.Identity.Web token acquisition
+builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+{
+    ["AzureAd:Instance"] = "https://login.microsoftonline.com",
+    ["AzureAd:TenantId"] = tenantId,
+    ["AzureAd:ClientId"] = clientId,
+    ["AzureAd:ClientSecret"] = clientSecret,
+    ["AzureAd:CallbackPath"] = "/signin-oidc",
+    ["AzureAd:SignedOutCallbackPath"] = "/signout-callback-oidc"
+});
+
+builder.Services.AddRazorPages();
+
 // Build authority: if tenantId provided, use tenant-specific endpoint; else use organizations (work/school only)
 var authority = string.IsNullOrEmpty(tenantId)
     ? $"{instance.TrimEnd('/')}/organizations/v2.0"
     : $"{instance.TrimEnd('/')}/{tenantId}/v2.0";
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-.AddMicrosoftIdentityWebApp(options =>
-    {
-        options.Authority = authority;
-        options.TenantId = tenantId;
-        options.ClientId = clientId;
-        options.ClientSecret = clientSecret;
-        options.CallbackPath = "/signin-oidc";
-        options.SignedOutCallbackPath = "/signout-callback-oidc";
-    })
+.AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
     .EnableTokenAcquisitionToCallDownstreamApi(downstreamScopes)
     .AddSessionTokenCaches();
 
