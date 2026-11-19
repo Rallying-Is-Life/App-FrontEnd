@@ -56,7 +56,7 @@ public class UserProfile : PageModel
 
         try
         {
-            var token = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
+            var token = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes, authenticationScheme: "OpenIdConnect");
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -96,7 +96,7 @@ public class UserProfile : PageModel
 
         try
         {
-            var token = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
+            var token = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes, authenticationScheme: "OpenIdConnect");
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -141,7 +141,7 @@ public class UserProfile : PageModel
 
         try
         {
-            var token = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
+            var token = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes, authenticationScheme: "OpenIdConnect");
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
