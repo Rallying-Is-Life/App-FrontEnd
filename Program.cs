@@ -102,13 +102,6 @@ builder.Services.AddSession(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
-// Configure cookie policy for correlation cookie
-builder.Services.Configure<CookiePolicyOptions>(options =>
-{
-    options.MinimumSameSitePolicy = SameSiteMode.Lax;
-    options.Secure = CookieSecurePolicy.Always;
-});
-
 var app = builder.Build();
 
 // Use forwarded headers BEFORE authentication middleware
@@ -126,7 +119,6 @@ app.UseRouting();
 // CORS between UseRouting and UseAuthentication (handles preflights on protected endpoints)
 app.UseCors("AllowFE");
 
-app.UseCookiePolicy();
 app.UseSession();
 
 app.UseAuthentication();
