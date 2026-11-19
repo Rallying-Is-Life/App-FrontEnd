@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 
@@ -79,7 +81,11 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddDownstreamWebApi("DownstreamApi", builder.Configuration.GetSection("DownstreamApi"))
     .AddDistributedTokenCaches(); // Uses distributed cache (Redis or memory)
 
-builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
+builder.Services.AddControllersWithViews(options =>
+{
+    // Handle consent/conditional access challenges for Razor Pages and Controllers
+    options.Filters.Add<ConsentChallengeFilter>();
+}).AddMicrosoftIdentityUI();
 
 builder.Services.AddControllers();
 builder.Services.AddCors(options => options.AddPolicy("AllowFE", p => p.WithOrigins(Environment.GetEnvironmentVariable("feRallyingIsLifeBaseURL") ?? "https://localhost:3000").AllowAnyHeader().AllowAnyMethod()));
@@ -127,3 +133,29 @@ app.MapLoginAndLogout();
 app.MapGet("/health", () => Results.Json(new { status = "healthy", service = "App-FrontEnd" }));
 
 app.Run();
+
+// MVC filter to handle consent challenges (MicrosoftIdentityWebChallengeUserException)
+// Redirects to Microsoft Identity UI Account controller for interactive consent
+public class ConsentChallengeFilter : IAsyncExceptionFilter
+{
+    public Task OnExceptionAsync(ExceptionContext context)
+    {
+        if (context.Exception is MicrosoftIdentityWebChallengeUserException)
+        {
+            // Don't redirect if already in consent flow or callback path
+            var path = context.HttpContext.Request.Path.Value ?? "";
+            if (path.StartsWith("/MicrosoftIdentity/Account/SignIn", StringComparison.OrdinalIgnoreCase) ||
+                path.StartsWith("/signin-oidc", StringComparison.OrdinalIgnoreCase) ||
+                path.StartsWith("/signout-callback-oidc", StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.CompletedTask; // Let it propagate
+            }
+
+            // Redirect to the Microsoft Identity UI Account controller for consent
+            var redirectUri = $"/MicrosoftIdentity/Account/SignIn?redirectUri={Uri.EscapeDataString(context.HttpContext.Request.Path + context.HttpContext.Request.QueryString)}";
+            context.HttpContext.Response.Redirect(redirectUri);
+            context.ExceptionHandled = true;
+        }
+        return Task.CompletedTask;
+    }
+}
