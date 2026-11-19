@@ -117,31 +117,6 @@ app.UseSession();
 app.UseAuthentication();
 app.UseAuthorization();
 
-// Middleware to handle consent challenges (MicrosoftIdentityWebChallengeUserException)
-// Placed AFTER UseAuthorization so it only catches exceptions from page handlers, not auth middleware
-app.Use(async (context, next) =>
-{
-    try
-    {
-        await next(context);
-    }
-    catch (MicrosoftIdentityWebChallengeUserException)
-    {
-        // Don't redirect if already in consent flow or callback path
-        var path = context.Request.Path.Value ?? "";
-        if (path.StartsWith("/MicrosoftIdentity/Account/SignIn", StringComparison.OrdinalIgnoreCase) ||
-            path.StartsWith("/signin-oidc", StringComparison.OrdinalIgnoreCase) ||
-            path.StartsWith("/signout-callback-oidc", StringComparison.OrdinalIgnoreCase))
-        {
-            throw; // Let it propagate
-        }
-
-        // Redirect to the Microsoft Identity UI Account controller for consent
-        var redirectUri = $"/MicrosoftIdentity/Account/SignIn?redirectUri={Uri.EscapeDataString(context.Request.Path + context.Request.QueryString)}";
-        context.Response.Redirect(redirectUri);
-    }
-});
-
 app.MapStaticAssets();
 app.MapRazorPages()
    .WithStaticAssets();
