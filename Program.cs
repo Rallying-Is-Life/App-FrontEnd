@@ -100,7 +100,25 @@ var app = builder.Build();
 // Use forwarded headers BEFORE authentication middleware
 app.UseForwardedHeaders();
 
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseRouting();
+
+// CORS between UseRouting and UseAuthentication (handles preflights on protected endpoints)
+app.UseCors("AllowFE");
+
+app.UseSession();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 // Middleware to handle consent challenges (MicrosoftIdentityWebChallengeUserException)
+// Placed AFTER UseAuthorization so it only catches exceptions from page handlers, not auth middleware
 app.Use(async (context, next) =>
 {
     try
@@ -123,23 +141,6 @@ app.Use(async (context, next) =>
         context.Response.Redirect(redirectUri);
     }
 });
-
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error");
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-app.UseRouting();
-
-// CORS between UseRouting and UseAuthentication (handles preflights on protected endpoints)
-app.UseCors("AllowFE");
-
-app.UseSession();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 app.MapStaticAssets();
 app.MapRazorPages()
