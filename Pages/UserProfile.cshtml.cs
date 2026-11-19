@@ -81,11 +81,10 @@ public class UserProfile : PageModel
                 ErrorMessage = $"Failed to update profile: {response.StatusCode} - {errorContent}";
             }
         }
-        catch (MicrosoftIdentityWebChallengeUserException ex)
+        catch (MicrosoftIdentityWebChallengeUserException)
         {
-            // Consent/conditional access required - the registered AddMicrosoftIdentityConsentHandler
-            // will handle the challenge via the Account controller
-            throw; // Re-throw to let the consent handler process it
+            // Consent/conditional access required - re-throw to let the consent handler process it
+            throw;
         }
         catch (Exception ex)
         {
