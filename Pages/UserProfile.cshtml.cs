@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Identity.Web;
+using Microsoft.Identity.Web.Resource;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text.Json;
@@ -11,6 +12,7 @@ using System.Text.Json;
 namespace App_FrontEnd.Pages;
 
 [Authorize]
+[AuthorizeForScopes(Scopes = new[] { "Api.Read", "Api.Write" })]
 public class UserProfile : PageModel
 {
     private readonly ITokenAcquisition _tokenAcquisition;
