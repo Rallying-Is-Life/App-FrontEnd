@@ -12,7 +12,6 @@ using System.Text.Json;
 namespace App_FrontEnd.Pages;
 
 [Authorize]
-[AuthorizeForScopes(Scopes = new[] { "Api.Read", "Api.Write" })]
 public class UserProfile : PageModel
 {
     private readonly ITokenAcquisition _tokenAcquisition;
