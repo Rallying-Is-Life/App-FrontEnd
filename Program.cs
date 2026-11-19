@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 
@@ -78,20 +79,6 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddDownstreamWebApi("DownstreamApi", builder.Configuration.GetSection("DownstreamApi"))
     .AddDistributedTokenCaches(); // Uses distributed cache (Redis or memory)
 
-// Configure OpenIdConnect options for correlation cookie behind load balancer
-builder.Services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
-{
-    options.CallbackPath = "/signin-oidc";
-    options.SignedOutCallbackPath = "/signout-callback-oidc";
-    // Entra ID returns via cross-site form_post; correlation/nonce cookies must be SameSite=None with Secure=true
-    options.CorrelationCookie.SameSite = SameSiteMode.None;
-    options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.CorrelationCookie.IsEssential = true;
-    options.NonceCookie.SameSite = SameSiteMode.None;
-    options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.NonceCookie.IsEssential = true;
-});
-
 builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
 
 builder.Services.AddControllers();
@@ -112,6 +99,21 @@ var app = builder.Build();
 
 // Use forwarded headers BEFORE authentication middleware
 app.UseForwardedHeaders();
+
+// Middleware to handle consent challenges (MicrosoftIdentityWebChallengeUserException)
+app.Use(async (context, next) =>
+{
+    try
+    {
+        await next(context);
+    }
+    catch (MicrosoftIdentityWebChallengeUserException ex)
+    {
+        // Redirect to the Microsoft Identity UI Account controller for consent
+        var redirectUrl = $"/MicrosoftIdentity/Account/SignIn?redirectUrl={Uri.EscapeDataString(context.Request.Path + context.Request.QueryString)}";
+        context.Response.Redirect(redirectUrl);
+    }
+});
 
 if (!app.Environment.IsDevelopment())
 {
