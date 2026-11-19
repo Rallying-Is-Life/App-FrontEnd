@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 
@@ -38,11 +40,34 @@ var authority = string.IsNullOrEmpty(tenantId)
     ? $"{instance.TrimEnd('/')}/organizations/v2.0"
     : $"{instance.TrimEnd('/')}/{tenantId}/v2.0";
 
+// Add forwarded headers for Azure App Service (load balancer)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
     .EnableTokenAcquisitionToCallDownstreamApi(downstreamScopes)
-    .AddSessionTokenCaches();
+    .AddSessionTokenCaches()
+    .AddMicrosoftIdentityConsentHandler(); // Handles consent/conditional access challenges for Razor Pages
 
+// Configure OpenIdConnect options for correlation cookie behind load balancer
+builder.Services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
+{
+    options.Authority = authority;
+    options.CallbackPath = "/signin-oidc";
+    options.SignedOutCallbackPath = "/signout-callback-oidc";
+    // Ensure correlation cookie works behind load balancer
+    options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+    options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.CorrelationCookie.IsEssential = true;
+    options.NonceCookie.SameSite = SameSiteMode.Lax;
+    options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.NonceCookie.IsEssential = true;
+});
 
 builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
 
@@ -68,6 +93,9 @@ builder.Services.Configure<CookiePolicyOptions>(options =>
 });
 
 var app = builder.Build();
+
+// Use forwarded headers BEFORE authentication middleware
+app.UseForwardedHeaders();
 
 if (!app.Environment.IsDevelopment())
 {
