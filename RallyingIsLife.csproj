@@ -4,6 +4,8 @@
     <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
+    <!-- Disable Microsoft.Identity.Web.UI source generator to avoid conflict with Razor Pages source generator -->
+    <IncludeMicrosoftIdentityWebUISourceGenerator>false</IncludeMicrosoftIdentityWebUISourceGenerator>
   </PropertyGroup>
 
   <ItemGroup>
