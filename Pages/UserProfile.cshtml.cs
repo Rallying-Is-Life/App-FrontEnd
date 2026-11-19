@@ -51,11 +51,10 @@ public class UserProfile : PageModel
 
         var baseUrl = (_configuration["apiRallyingIsLifeBaseURL"] ?? "").TrimEnd('/');
         var scopes = _configuration["DownstreamApiScopes"]?.Split(',').Select(s => s.Trim()).ToArray() ?? new[] { "Api.Write" };
-        var scopeString = string.Join(" ", scopes);
 
         try
         {
-            var token = await _tokenAcquisition.GetAccessTokenForAppAsync(scopeString);
+            var token = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -92,11 +91,10 @@ public class UserProfile : PageModel
     {
         var baseUrl = (_configuration["apiRallyingIsLifeBaseURL"] ?? "").TrimEnd('/');
         var scopes = _configuration["DownstreamApiScopes"]?.Split(',').Select(s => s.Trim()).ToArray() ?? new[] { "Api.Read" };
-        var scopeString = string.Join(" ", scopes);
 
         try
         {
-            var token = await _tokenAcquisition.GetAccessTokenForAppAsync(scopeString);
+            var token = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
@@ -138,11 +136,10 @@ public class UserProfile : PageModel
     {
         var baseUrl = (_configuration["apiRallyingIsLifeBaseURL"] ?? "").TrimEnd('/');
         var scopes = _configuration["DownstreamApiScopes"]?.Split(',').Select(s => s.Trim()).ToArray() ?? new[] { "Api.Read" };
-        var scopeString = string.Join(" ", scopes);
 
         try
         {
-            var token = await _tokenAcquisition.GetAccessTokenForAppAsync(scopeString);
+            var token = await _tokenAcquisition.GetAccessTokenForUserAsync(scopes);
             var client = _httpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
