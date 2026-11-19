@@ -15,13 +15,11 @@ var clientId = Environment.GetEnvironmentVariable("ClientID")
     ?? Environment.GetEnvironmentVariable("AzureAd__ClientId") ?? "";
 var clientSecret = Environment.GetEnvironmentVariable("ClientSecret")
     ?? Environment.GetEnvironmentVariable("AzureAd__ClientSecret") ?? "";
-// Downstream API scope for token acquisition (full format: api://<api-client-id>/Scope).
-// Fallback uses API client ID from env var if provided, otherwise bare scopes (legacy).
+// Downstream API (custom API) configuration
 var apiClientId = Environment.GetEnvironmentVariable("ApiClientId") ?? "";
-var downstreamScopesRaw = Environment.GetEnvironmentVariable("DownstreamApiScopes")
-    ?? Environment.GetEnvironmentVariable("DownstreamApiScope")
-    ?? (string.IsNullOrEmpty(apiClientId) ? "Api.Read,Api.Write" : $"api://{apiClientId}/Api.Read,api://{apiClientId}/Api.Write");
-var downstreamScopes = downstreamScopesRaw.Split(',').Select(s => s.Trim()).ToArray();
+var apiBaseUrl = Environment.GetEnvironmentVariable("ApiBaseUrl") ?? "";
+var apiScopes = Environment.GetEnvironmentVariable("ApiScopes") ?? 
+    (string.IsNullOrEmpty(apiClientId) ? "Api.Read,Api.Write" : $"api://{apiClientId}/Api.Read,api://{apiClientId}/Api.Write");
 
 // Map env vars to AzureAd config section for Microsoft.Identity.Web token acquisition
 builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
@@ -32,6 +30,13 @@ builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
     ["AzureAd:ClientSecret"] = clientSecret,
     ["AzureAd:CallbackPath"] = "/signin-oidc",
     ["AzureAd:SignedOutCallbackPath"] = "/signout-callback-oidc"
+});
+
+// Downstream API config section for Microsoft.Identity.Web
+builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+{
+    ["DownstreamApi:BaseUrl"] = apiBaseUrl,
+    ["DownstreamApi:Scopes"] = apiScopes
 });
 
 builder.Services.AddRazorPages();
@@ -68,7 +73,8 @@ else
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
-    .EnableTokenAcquisitionToCallDownstreamApi(downstreamScopes)
+    .EnableTokenAcquisitionToCallDownstreamApi() // For Microsoft Graph (if needed)
+    .AddDownstreamWebApi("DownstreamApi", builder.Configuration.GetSection("DownstreamApi"))
     .AddDistributedTokenCaches(); // Uses distributed cache (Redis or memory)
 
 // Configure OpenIdConnect options for correlation cookie behind load balancer
@@ -93,7 +99,7 @@ builder.Services.AddCors(options => options.AddPolicy("AllowFE", p => p.WithOrig
 
 builder.Services.AddAuthorization();
 
-// Session required by AddDistributedTokenCaches() (stores OBO tokens in distributed cache).
+// Session required by AddDistributedTokenCaches() (stores tokens in distributed cache).
 builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;
