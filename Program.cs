@@ -22,10 +22,15 @@ var downstreamScopesRaw = Environment.GetEnvironmentVariable("DownstreamApiScope
     ?? "Api.Read,Api.Write";
 var downstreamScopes = downstreamScopesRaw.Split(',').Select(s => s.Trim()).ToArray();
 
+// Build authority: if tenantId provided, use tenant-specific endpoint; else use organizations (work/school only)
+var authority = string.IsNullOrEmpty(tenantId)
+    ? $"{instance.TrimEnd('/')}/organizations/v2.0"
+    : $"{instance.TrimEnd('/')}/{tenantId}/v2.0";
+
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 .AddMicrosoftIdentityWebApp(options =>
     {
-        options.Instance = instance;
+        options.Authority = authority;
         options.TenantId = tenantId;
         options.ClientId = clientId;
         options.ClientSecret = clientSecret;
