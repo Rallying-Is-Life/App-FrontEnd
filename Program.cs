@@ -9,8 +9,9 @@ using Microsoft.Identity.Web.UI;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Azure AD / Entra External ID settings (from web-app settings, never committed)
-var instance = Environment.GetEnvironmentVariable("AzureAd__Instance") ?? "https://login.microsoftonline.com";
+// Azure AD / Entra External ID (CIAM) settings (from web-app settings, never committed)
+// For CIAM: Instance = Authority = CIAM URL (e.g., https://tenant.ciamlogin.com/tenant/v2.0)
+// For regular Entra ID: Instance = https://login.microsoftonline.com, Authority = organizations/v2.0 or tenant/v2.0
 var tenantId = Environment.GetEnvironmentVariable("TenantID")
     ?? Environment.GetEnvironmentVariable("AzureAd__TenantId")
     ?? Environment.GetEnvironmentVariable("Auth__TenantId") ?? "";
@@ -18,27 +19,39 @@ var clientId = Environment.GetEnvironmentVariable("ClientID")
     ?? Environment.GetEnvironmentVariable("AzureAd__ClientId") ?? "";
 var clientSecret = Environment.GetEnvironmentVariable("ClientSecret")
     ?? Environment.GetEnvironmentVariable("AzureAd__ClientSecret") ?? "";
+var domain = Environment.GetEnvironmentVariable("AzureAd__Domain") ?? ""; // Required for CIAM
+var ciamTenantName = Environment.GetEnvironmentVariable("CiamTenantName") ?? ""; // CIAM tenant subdomain
+
 // Downstream API (custom API) configuration
 var apiClientId = Environment.GetEnvironmentVariable("ApiClientId") ?? "";
 var apiBaseUrl = Environment.GetEnvironmentVariable("ApiBaseUrl") ?? "";
 var apiScopes = Environment.GetEnvironmentVariable("ApiScopes") ?? 
     (string.IsNullOrEmpty(apiClientId) ? "Api.Read,Api.Write" : $"api://{apiClientId}/Api.Read,api://{apiClientId}/Api.Write");
 
-// Build authority: if tenantId provided, use tenant-specific endpoint; else use organizations (work/school only)
-var authority = string.IsNullOrEmpty(tenantId)
-    ? $"{instance.TrimEnd('/')}/organizations/v2.0"
-    : $"{instance.TrimEnd('/')}/{tenantId}/v2.0";
+// Build Instance and Authority for CIAM vs regular Entra ID
+// For CIAM: Instance = Authority = https://{tenant-name}.ciamlogin.com/{tenant-id}/v2.0
+// For regular Entra ID: Instance = https://login.microsoftonline.com, Authority = organizations/v2.0 or tenant/v2.0
+var instance = string.IsNullOrEmpty(ciamTenantName)
+    ? (Environment.GetEnvironmentVariable("AzureAd__Instance") ?? "https://login.microsoftonline.com")
+    : $"https://{ciamTenantName}.ciamlogin.com/{tenantId}/v2.0";
+var authority = string.IsNullOrEmpty(ciamTenantName)
+    ? (string.IsNullOrEmpty(tenantId) ? $"{instance.TrimEnd('/')}/organizations/v2.0" : $"{instance.TrimEnd('/')}/{tenantId}/v2.0")
+    : instance; // CIAM uses same URL for both
+var domainForConfig = string.IsNullOrEmpty(ciamTenantName)
+    ? domain
+    : $"{ciamTenantName}.onmicrosoft.com";
 
 // Map env vars to AzureAd config section for Microsoft.Identity.Web token acquisition
 builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
 {
-    ["AzureAd:Instance"] = "https://login.microsoftonline.com",
+    ["AzureAd:Instance"] = instance,
     ["AzureAd:TenantId"] = tenantId,
     ["AzureAd:ClientId"] = clientId,
     ["AzureAd:ClientSecret"] = clientSecret,
     ["AzureAd:CallbackPath"] = "/signin-oidc",
     ["AzureAd:SignedOutCallbackPath"] = "/signout-callback-oidc",
-    ["AzureAd:Authority"] = authority
+    ["AzureAd:Authority"] = authority,
+    ["AzureAd:Domain"] = domainForConfig
 });
 
 builder.Services.AddRazorPages();
