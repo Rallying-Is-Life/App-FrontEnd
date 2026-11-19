@@ -12,6 +12,7 @@ using System.Text.Json;
 namespace App_FrontEnd.Pages;
 
 [Authorize]
+[AuthorizeForScopes(ScopeKeySection = "DownstreamApi:Scopes")]
 public class UserProfile : PageModel
 {
     private readonly ITokenAcquisition _tokenAcquisition;
