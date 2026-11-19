@@ -21,6 +21,11 @@ var apiBaseUrl = Environment.GetEnvironmentVariable("ApiBaseUrl") ?? "";
 var apiScopes = Environment.GetEnvironmentVariable("ApiScopes") ?? 
     (string.IsNullOrEmpty(apiClientId) ? "Api.Read,Api.Write" : $"api://{apiClientId}/Api.Read,api://{apiClientId}/Api.Write");
 
+// Build authority: if tenantId provided, use tenant-specific endpoint; else use organizations (work/school only)
+var authority = string.IsNullOrEmpty(tenantId)
+    ? $"{instance.TrimEnd('/')}/organizations/v2.0"
+    : $"{instance.TrimEnd('/')}/{tenantId}/v2.0";
+
 // Map env vars to AzureAd config section for Microsoft.Identity.Web token acquisition
 builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
 {
@@ -29,7 +34,8 @@ builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
     ["AzureAd:ClientId"] = clientId,
     ["AzureAd:ClientSecret"] = clientSecret,
     ["AzureAd:CallbackPath"] = "/signin-oidc",
-    ["AzureAd:SignedOutCallbackPath"] = "/signout-callback-oidc"
+    ["AzureAd:SignedOutCallbackPath"] = "/signout-callback-oidc",
+    ["AzureAd:Authority"] = authority
 });
 
 // Downstream API config section for Microsoft.Identity.Web
@@ -40,11 +46,6 @@ builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
 });
 
 builder.Services.AddRazorPages();
-
-// Build authority: if tenantId provided, use tenant-specific endpoint; else use organizations (work/school only)
-var authority = string.IsNullOrEmpty(tenantId)
-    ? $"{instance.TrimEnd('/')}/organizations/v2.0"
-    : $"{instance.TrimEnd('/')}/{tenantId}/v2.0";
 
 // Add forwarded headers for Azure App Service (load balancer)
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
@@ -80,7 +81,6 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 // Configure OpenIdConnect options for correlation cookie behind load balancer
 builder.Services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.AuthenticationScheme, options =>
 {
-    options.Authority = authority;
     options.CallbackPath = "/signin-oidc";
     options.SignedOutCallbackPath = "/signout-callback-oidc";
     // Entra ID returns via cross-site form_post; correlation/nonce cookies must be SameSite=None with Secure=true
