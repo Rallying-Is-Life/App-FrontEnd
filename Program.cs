@@ -107,11 +107,12 @@ app.Use(async (context, next) =>
     {
         await next(context);
     }
-    catch (MicrosoftIdentityWebChallengeUserException ex)
+    catch (MicrosoftIdentityWebChallengeUserException)
     {
         // Redirect to the Microsoft Identity UI Account controller for consent
-        var redirectUrl = $"/MicrosoftIdentity/Account/SignIn?redirectUrl={Uri.EscapeDataString(context.Request.Path + context.Request.QueryString)}";
-        context.Response.Redirect(redirectUrl);
+        // Uses 'redirectUri' parameter (not 'redirectUrl') as expected by Account controller
+        var redirectUri = $"/MicrosoftIdentity/Account/SignIn?redirectUri={Uri.EscapeDataString(context.Request.Path + context.Request.QueryString)}";
+        context.Response.Redirect(redirectUri);
     }
 });
 
