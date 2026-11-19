@@ -60,11 +60,11 @@ builder.Services.PostConfigure<OpenIdConnectOptions>(OpenIdConnectDefaults.Authe
     options.Authority = authority;
     options.CallbackPath = "/signin-oidc";
     options.SignedOutCallbackPath = "/signout-callback-oidc";
-    // Ensure correlation cookie works behind load balancer
-    options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+    // Entra ID returns via cross-site form_post; correlation/nonce cookies must be SameSite=None with Secure=true
+    options.CorrelationCookie.SameSite = SameSiteMode.None;
     options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
     options.CorrelationCookie.IsEssential = true;
-    options.NonceCookie.SameSite = SameSiteMode.Lax;
+    options.NonceCookie.SameSite = SameSiteMode.None;
     options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
     options.NonceCookie.IsEssential = true;
 });
