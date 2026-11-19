@@ -4,7 +4,7 @@ using Microsoft.Identity.Web.UI;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages().AddMicrosoftIdentityUI();
+builder.Services.AddRazorPages();
 
 // Azure AD / Entra External ID settings (from web-app settings, never committed)
 var instance = Environment.GetEnvironmentVariable("AzureAd__Instance") ?? "https://login.microsoftonline.com";
