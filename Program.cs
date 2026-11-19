@@ -109,8 +109,16 @@ app.Use(async (context, next) =>
     }
     catch (MicrosoftIdentityWebChallengeUserException)
     {
+        // Don't redirect if already in consent flow or callback path
+        var path = context.Request.Path.Value ?? "";
+        if (path.StartsWith("/MicrosoftIdentity/Account/SignIn", StringComparison.OrdinalIgnoreCase) ||
+            path.StartsWith("/signin-oidc", StringComparison.OrdinalIgnoreCase) ||
+            path.StartsWith("/signout-callback-oidc", StringComparison.OrdinalIgnoreCase))
+        {
+            throw; // Let it propagate
+        }
+
         // Redirect to the Microsoft Identity UI Account controller for consent
-        // Uses 'redirectUri' parameter (not 'redirectUrl') as expected by Account controller
         var redirectUri = $"/MicrosoftIdentity/Account/SignIn?redirectUri={Uri.EscapeDataString(context.Request.Path + context.Request.QueryString)}";
         context.Response.Redirect(redirectUri);
     }
