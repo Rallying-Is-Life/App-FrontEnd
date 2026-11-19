@@ -6,6 +6,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <!-- Disable Microsoft.Identity.Web.UI source generator to avoid conflict with Razor Pages source generator -->
     <IncludeMicrosoftIdentityWebUISourceGenerator>false</IncludeMicrosoftIdentityWebUISourceGenerator>
+    <MicrosoftIdentityWebUISourceGenerator>false</MicrosoftIdentityWebUISourceGenerator>
   </PropertyGroup>
 
   <ItemGroup>
