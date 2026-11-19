@@ -41,13 +41,6 @@ builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
     ["AzureAd:Authority"] = authority
 });
 
-// Downstream API config section for Microsoft.Identity.Web
-builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
-{
-    ["DownstreamApi:BaseUrl"] = apiBaseUrl,
-    ["DownstreamApi:Scopes"] = apiScopes
-});
-
 builder.Services.AddRazorPages();
 
 // Add forwarded headers for Azure App Service (load balancer)
@@ -78,7 +71,6 @@ else
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
     .EnableTokenAcquisitionToCallDownstreamApi(Array.Empty<string>())
-    .AddDownstreamWebApi("DownstreamApi", builder.Configuration.GetSection("DownstreamApi"))
     .AddDistributedTokenCaches(); // Uses distributed cache (Redis or memory)
 
 builder.Services.AddControllersWithViews(options =>
