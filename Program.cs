@@ -75,7 +75,7 @@ else
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
 .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
-    .EnableTokenAcquisitionToCallDownstreamApi() // For Microsoft Graph (if needed)
+    .EnableTokenAcquisitionToCallDownstreamApi(Array.Empty<string>())
     .AddDownstreamWebApi("DownstreamApi", builder.Configuration.GetSection("DownstreamApi"))
     .AddDistributedTokenCaches(); // Uses distributed cache (Redis or memory)
 
