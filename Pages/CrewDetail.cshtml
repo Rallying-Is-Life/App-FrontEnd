@@ -65,6 +65,8 @@
                     <th class="text-center" style="width:100px;">Type</th>
                     <th class="text-center" style="width:120px;">Time</th>
                     <th class="text-center" style="width:100px;">Status</th>
+                    <th class="text-center" style="width:80px;">Ovr Pos</th>
+                    <th class="text-center" style="width:80px;">Cls Pos</th>
                     <th class="text-center" style="width:100px;">Bogey</th>
                     <th class="text-center" style="width:100px;">Max Time</th>
                 </tr>
@@ -92,6 +94,8 @@
                                 <br /><small class="text-muted">@s.RetirementReason</small>
                             }
                         </td>
+                        <td class="text-center fw-bold">@(s.OverallPosition.HasValue ? s.OverallPosition.ToString() + Model.GetTrophyEmoji(s.OverallPosition.Value) : "—")</td>
+                        <td class="text-center fw-bold">@(s.ClassPosition.HasValue ? s.ClassPosition.ToString() : "—")</td>
                         <td class="text-center">
                             @if (s.BogeyTimeSeconds.HasValue)
                             {

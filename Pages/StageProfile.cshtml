@@ -1,0 +1,184 @@
+@page
+@model App_FrontEnd.Pages.StageProfile
+@{
+    ViewData["Title"] = "Stage Profile";
+    var hasStage = Model.Stage != null && Model.Stage.StageNumber > 0;
+}
+<div class="card-modern p-4 mb-4">
+    @if (!string.IsNullOrEmpty(Model.RallyName) && hasStage)
+    {
+        <h2>@Model.EventDate.Year @Model.RallyName</h2>
+        <p class="text-muted">Stage Profile — SS@(Model.Stage.StageNumber): @Model.Stage.StageName</p>
+    }
+    else
+    {
+        <h2>Stage Profile</h2>
+        <p class="text-muted">Stage details, rescue/recovery units, and classification</p>
+    }
+
+    @if (hasStage)
+    {
+        <!-- Stage Details -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Stage Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <p class="mb-1"><strong>Stage Number:</strong> SS@Model.Stage.StageNumber</p>
+                        <p class="mb-1"><strong>Stage Name:</strong> @Model.Stage.StageName</p>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="mb-1"><strong>Length:</strong> @Model.Stage.StageLength</p>
+                        <p class="mb-1"><strong>Surface:</strong> @Model.Stage.StageType</p>
+                    </div>
+                    <div class="col-md-3">
+                        <p class="mb-1"><strong>Bogey Time:</strong> @(Model.Stage.BogeyTimeSeconds.HasValue ? Model.FormatTime(Model.Stage.BogeyTimeSeconds) : "—")</p>
+                        <p class="mb-1"><strong>Max Time:</strong> @(Model.Stage.MaxTimeSeconds.HasValue ? Model.FormatTime(Model.Stage.MaxTimeSeconds) : "—")</p>
+                    </div>
+                    <div class="col-md-3">
+                        @if (Model.Stage.StageDate.HasValue)
+                        {
+                            <p class="mb-1"><strong>Date:</strong> @Model.Stage.StageDate.Value.ToString("dd MMM yyyy")</p>
+                        }
+                        @if (!string.IsNullOrEmpty(Model.Stage.Leg))
+                        {
+                            <p class="mb-1"><strong>Leg:</strong> @Model.Stage.Leg</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rescue Units -->
+        @if (Model.RescueUnits.Any())
+        {
+            <div class="card mb-4">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Rescue Units</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                        @foreach (var unit in Model.RescueUnits)
+                        {
+                            <div class="col">
+                                <div class="card h-100 hover-lift border-danger">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-danger">@unit.Name</h6>
+                                        @if (!string.IsNullOrEmpty(unit.PointType))
+                                        {
+                                            <p class="card-text mb-1"><small class="text-muted">Point: @unit.PointType</small></p>
+                                        }
+                                        @if (!string.IsNullOrEmpty(unit.Website))
+                                        {
+                                            <a href="@unit.Website" target="_blank" class="btn btn-sm btn-outline-danger">Website</a>
+                                        }
+                                        <a href="/RescueProfile?id=@unit.UnitId" class="btn btn-sm btn-danger mt-2">View Profile</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Recovery Units -->
+        @if (Model.RecoveryUnits.Any())
+        {
+            <div class="card mb-4">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">Recovery Units</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                        @foreach (var unit in Model.RecoveryUnits)
+                        {
+                            <div class="col">
+                                <div class="card h-100 hover-lift border-warning">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-warning">@unit.Name</h6>
+                                        @if (!string.IsNullOrEmpty(unit.PointType))
+                                        {
+                                            <p class="card-text mb-1"><small class="text-muted">Point: @unit.PointType</small></p>
+                                        }
+                                        @if (!string.IsNullOrEmpty(unit.Website))
+                                        {
+                                            <a href="@unit.Website" target="_blank" class="btn btn-sm btn-outline-warning">Website</a>
+                                        }
+                                        <a href="/RecoveryProfile?id=@unit.UnitId" class="btn btn-sm btn-warning text-dark mt-2">View Profile</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Stage Leaderboard -->
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Stage Classification — SS@(Model.Stage.StageNumber)</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-sm table-striped table-hover table-bordered rounded table-container mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="text-center" style="width:60px;">Pos</th>
+                                <th class="text-center" style="width:80px;">Car #</th>
+                                <th>Driver</th>
+                                <th>Co-Driver</th>
+                                <th class="text-center" style="width:80px;">Class</th>
+                                <th class="text-center" style="width:80px;">Class Pos</th>
+                                <th class="text-center" style="width:120px;">Time</th>
+                                <th class="text-center" style="width:100px;">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var e in Model.Leaderboard)
+                            {
+                                <tr class="hover-lift">
+                                    <td class="text-center fw-bold">@e.OverallPosition@Model.GetTrophyEmoji(e.OverallPosition)</td>
+                                    <td class="text-center fw-bold">@e.RaceNumber</td>
+                                    <td>@e.DriverName</td>
+                                    <td>@e.CoDriverName</td>
+                                    <td class="text-center">@e.RaceClass</td>
+                                    <td class="text-center fw-bold">@(e.ClassPosition > 0 ? e.ClassPosition.ToString() : "—")</td>
+                                    <td class="text-center">@Model.FormatTime(e.TimeSeconds)</td>
+                                    <td class="text-center">
+                                        @if (!string.IsNullOrEmpty(e.Status))
+                                        {
+                                            <span class="badge @Model.GetStatusBadgeClass(e.Status)">@e.Status</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                @if (Model.Leaderboard.Count == 0)
+                {
+                    <div class="text-center text-muted py-5">
+                        <p>No classification data for this stage.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="text-center text-muted py-5">
+            <p>Stage not found. Please check the rally ID and stage number.</p>
+        </div>
+    }
+
+    <a class="btn btn-outline-secondary" href="/StageClassification?id=@Model.RallyRowKey">← Back to Stage Classification</a>
+    <a class="btn btn-outline-secondary ms-2" href="/Leaderboard?id=@Model.RallyRowKey">Full Leaderboard</a>
+</div>
+<style>
+.hover-lift { transition: transform .15s ease, box-shadow .15s ease; }
+.hover-lift:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15); }
+</style>
