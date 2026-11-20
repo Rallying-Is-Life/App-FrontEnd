@@ -1,13 +1,17 @@
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddRazorPages();
-
-// Azure AD / Entra External ID settings (from web-app settings, never committed)
-var instance = Environment.GetEnvironmentVariable("AzureAd__Instance") ?? "https://login.microsoftonline.com";
+// Azure AD / Entra External ID (CIAM) settings (from web-app settings, never committed)
+// For CIAM: Instance = Authority = CIAM URL (e.g., https://tenant.ciamlogin.com/tenant/v2.0)
+// For regular Entra ID: Instance = https://login.microsoftonline.com, Authority = organizations/v2.0 or tenant/v2.0
 var tenantId = Environment.GetEnvironmentVariable("TenantID")
     ?? Environment.GetEnvironmentVariable("AzureAd__TenantId")
     ?? Environment.GetEnvironmentVariable("Auth__TenantId") ?? "";
@@ -15,43 +19,97 @@ var clientId = Environment.GetEnvironmentVariable("ClientID")
     ?? Environment.GetEnvironmentVariable("AzureAd__ClientId") ?? "";
 var clientSecret = Environment.GetEnvironmentVariable("ClientSecret")
     ?? Environment.GetEnvironmentVariable("AzureAd__ClientSecret") ?? "";
-// Downstream API scope for OBO token acquisition (e.g. "Api.Read,Api.Write").
-// Split on ',' so multiple scopes may be configured in one env var.
-var downstreamScopesRaw = Environment.GetEnvironmentVariable("DownstreamApiScopes")
-    ?? Environment.GetEnvironmentVariable("DownstreamApiScope")
-    ?? "Api.Read,Api.Write";
-var downstreamScopes = downstreamScopesRaw.Split(',').Select(s => s.Trim()).ToArray();
+var domain = Environment.GetEnvironmentVariable("AzureAd__Domain") ?? ""; // Required for CIAM
+var ciamTenantName = Environment.GetEnvironmentVariable("CiamTenantName") ?? ""; // CIAM tenant subdomain
+
+// Downstream API (custom API) configuration
+var apiClientId = Environment.GetEnvironmentVariable("ApiClientId") ?? "";
+var apiBaseUrl = Environment.GetEnvironmentVariable("ApiBaseUrl") ?? "";
+var apiScopes = Environment.GetEnvironmentVariable("ApiScopes") ?? 
+    (string.IsNullOrEmpty(apiClientId) ? "Api.Read,Api.Write" : $"api://{apiClientId}/Api.Read,api://{apiClientId}/Api.Write");
+
+// Build Instance and Authority for CIAM vs regular Entra ID
+// For CIAM: Instance = Authority = https://{tenant-name}.ciamlogin.com/{tenant-id}/v2.0
+// For regular Entra ID: Instance = https://login.microsoftonline.com, Authority = organizations/v2.0 or tenant/v2.0
+var instance = string.IsNullOrEmpty(ciamTenantName)
+    ? (Environment.GetEnvironmentVariable("AzureAd__Instance") ?? "https://login.microsoftonline.com")
+    : $"https://{ciamTenantName}.ciamlogin.com/{tenantId}/v2.0";
+var authority = string.IsNullOrEmpty(ciamTenantName)
+    ? (string.IsNullOrEmpty(tenantId) ? $"{instance.TrimEnd('/')}/organizations/v2.0" : $"{instance.TrimEnd('/')}/{tenantId}/v2.0")
+    : instance; // CIAM uses same URL for both
+var domainForConfig = string.IsNullOrEmpty(ciamTenantName)
+    ? domain
+    : $"{ciamTenantName}.onmicrosoft.com";
+
+// Map env vars to AzureAd config section for Microsoft.Identity.Web token acquisition
+builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
+{
+    ["AzureAd:Instance"] = instance,
+    ["AzureAd:TenantId"] = tenantId,
+    ["AzureAd:ClientId"] = clientId,
+    ["AzureAd:ClientSecret"] = clientSecret,
+    ["AzureAd:CallbackPath"] = "/signin-oidc",
+    ["AzureAd:SignedOutCallbackPath"] = "/signout-callback-oidc",
+    ["AzureAd:Authority"] = authority,
+    ["AzureAd:Domain"] = domainForConfig
+});
+
+builder.Services.AddRazorPages();
+
+// Add forwarded headers for Azure App Service (load balancer)
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto | ForwardedHeaders.XForwardedHost;
+    options.KnownNetworks.Clear();
+    options.KnownProxies.Clear();
+});
+
+// Distributed cache for session token cache (survives restarts/scale-out)
+// Requires REDIS_CONNECTION_STRING env var in Azure App Service
+var redisConn = Environment.GetEnvironmentVariable("REDIS_CONNECTION_STRING");
+if (!string.IsNullOrEmpty(redisConn))
+{
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = redisConn;
+        options.InstanceName = "RallyingIsLife:";
+    });
+}
+else
+{
+    // Fallback: in-memory (dev only) - does NOT survive restarts
+    builder.Services.AddDistributedMemoryCache();
+}
 
 builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-.AddMicrosoftIdentityWebApp(options =>
-    {
-        options.Instance = instance;
-        options.TenantId = tenantId;
-        options.ClientId = clientId;
-        options.ClientSecret = clientSecret;
-        options.CallbackPath = "/signin-oidc";
-        options.SignedOutCallbackPath = "/signout-callback-oidc";
-    })
-    .EnableTokenAcquisitionToCallDownstreamApi(downstreamScopes)
-    .AddSessionTokenCaches();
+.AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
+    .EnableTokenAcquisitionToCallDownstreamApi(Array.Empty<string>())
+    .AddDistributedTokenCaches(); // Uses distributed cache (Redis or memory)
 
-
-builder.Services.AddControllersWithViews().AddMicrosoftIdentityUI();
+builder.Services.AddControllersWithViews(options =>
+{
+    // Handle consent/conditional access challenges for Razor Pages and Controllers
+    options.Filters.Add<ConsentChallengeFilter>();
+}).AddMicrosoftIdentityUI();
 
 builder.Services.AddControllers();
 builder.Services.AddCors(options => options.AddPolicy("AllowFE", p => p.WithOrigins(Environment.GetEnvironmentVariable("feRallyingIsLifeBaseURL") ?? "https://localhost:3000").AllowAnyHeader().AllowAnyMethod()));
 
 builder.Services.AddAuthorization();
 
-// Session required by AddSessionTokenCaches() (stores OBO tokens in session).
+// Session required by AddDistributedTokenCaches() (stores tokens in distributed cache).
 builder.Services.AddSession(options =>
 {
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
-    options.Cookie.SameSite = SameSiteMode.Unspecified;
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
 });
 
 var app = builder.Build();
+
+// Use forwarded headers BEFORE authentication middleware
+app.UseForwardedHeaders();
 
 if (!app.Environment.IsDevelopment())
 {
@@ -61,13 +119,14 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-app.UseCookiePolicy();
+
+// CORS between UseRouting and UseAuthentication (handles preflights on protected endpoints)
+app.UseCors("AllowFE");
+
 app.UseSession();
 
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.UseCors("AllowFE");
 
 app.MapStaticAssets();
 app.MapRazorPages()
@@ -79,3 +138,29 @@ app.MapLoginAndLogout();
 app.MapGet("/health", () => Results.Json(new { status = "healthy", service = "App-FrontEnd" }));
 
 app.Run();
+
+// MVC filter to handle consent challenges (MicrosoftIdentityWebChallengeUserException)
+// Redirects to Microsoft Identity UI Account controller for interactive consent
+public class ConsentChallengeFilter : IAsyncExceptionFilter
+{
+    public Task OnExceptionAsync(ExceptionContext context)
+    {
+        if (context.Exception is MicrosoftIdentityWebChallengeUserException)
+        {
+            // Don't redirect if already in consent flow or callback path
+            var path = context.HttpContext.Request.Path.Value ?? "";
+            if (path.StartsWith("/MicrosoftIdentity/Account/SignIn", StringComparison.OrdinalIgnoreCase) ||
+                path.StartsWith("/signin-oidc", StringComparison.OrdinalIgnoreCase) ||
+                path.StartsWith("/signout-callback-oidc", StringComparison.OrdinalIgnoreCase))
+            {
+                return Task.CompletedTask; // Let it propagate
+            }
+
+            // Redirect to the Microsoft Identity UI Account controller for consent
+            var redirectUri = $"/MicrosoftIdentity/Account/SignIn?redirectUri={Uri.EscapeDataString(context.HttpContext.Request.Path + context.HttpContext.Request.QueryString)}";
+            context.HttpContext.Response.Redirect(redirectUri);
+            context.ExceptionHandled = true;
+        }
+        return Task.CompletedTask;
+    }
+}
