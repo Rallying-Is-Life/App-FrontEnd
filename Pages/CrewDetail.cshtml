@@ -130,3 +130,26 @@
 .hover-lift { transition: transform .15s ease, box-shadow .15s ease; }
 .hover-lift:hover { transform: translateY(-3px); box-shadow: 0 .5rem 1rem rgba(0,0,0,.15); }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Debug: log stage data to console
+    const rows = document.querySelectorAll('table tbody tr');
+    rows.forEach((row, index) => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 9) {
+            console.log('Stage ' + (index + 1) + ':', {
+                stage: cells[0].textContent.trim(),
+                name: cells[1].textContent.trim(),
+                type: cells[2].textContent.trim(),
+                time: cells[3].textContent.trim(),
+                status: cells[4].textContent.trim(),
+                ovrPos: cells[5].textContent.trim(),
+                clsPos: cells[6].textContent.trim(),
+                bogey: cells[7].textContent.trim(),
+                maxTime: cells[8].textContent.trim()
+            });
+        }
+    });
+});
+</script>
