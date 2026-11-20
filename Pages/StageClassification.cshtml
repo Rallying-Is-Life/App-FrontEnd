@@ -65,7 +65,8 @@
             <table class="table table-sm table-striped table-hover table-bordered rounded table-container">
                 <thead class="table-dark">
                     <tr>
-                        <th class="text-center" style="width:60px;">Pos</th>
+                        <th class="text-center" style="width:60px;">Ovr Pos</th>
+                        <th class="text-center" style="width:60px;">Cls Pos</th>
                         <th class="text-center" style="width:80px;">Car #</th>
                         <th>Driver</th>
                         <th>Co-Driver</th>
@@ -78,7 +79,8 @@
                     @foreach (var e in Model.Entries)
                     {
                         <tr class="hover-lift">
-                            <td class="text-center fw-bold">@e.Position</td>
+                            <td class="text-center fw-bold">@e.OverallPosition@Model.GetTrophyEmoji(e.OverallPosition)</td>
+                            <td class="text-center fw-bold">@(e.ClassPosition > 0 ? e.ClassPosition.ToString() : "—")</td>
                             <td class="text-center fw-bold">@e.RaceNumber</td>
                             <td>@e.DriverName</td>
                             <td>@e.CoDriverName</td>
