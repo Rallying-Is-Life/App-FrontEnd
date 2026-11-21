@@ -8,13 +8,20 @@
     @if (!string.IsNullOrEmpty(Model.RallyName))
     {
         <h2>@Model.EventDate.Year @Model.RallyName</h2>
-        <p class="text-muted">Full Results @(hasClassFilter ? $"— Class: {Model.ClassId}" : "— Overall")</p>
+        <p class="text-muted">Full Results @(hasClassFilter ? "— Class: " + Model.ClassId : "— Overall")</p>
     }
     else
     {
         <h2>Leaderboard</h2>
-        <p class="text-muted">Full Results @(hasClassFilter ? $"— Class: {Model.ClassId}" : "— Overall")</p>
+        <p class="text-muted">Full Results @(hasClassFilter ? "— Class: " + Model.ClassId : "— Overall")</p>
     }
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb bg-transparent mb-0 p-0">
+            <li class="breadcrumb-item"><a href="/RallyProfile?id=@Model.RallyRowKey">Rally Profile</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Results</li>
+        </ol>
+    </nav>
 
     @* Class filter tabs *@
     <ul class="nav nav-tabs mb-3" role="tablist">
@@ -53,7 +60,7 @@
                 @foreach (var e in Model.Entries)
                 {
                     var isFinished = string.Equals(e.Status, "Finished", StringComparison.OrdinalIgnoreCase);
-                    var isRetiredOrExcluded = string.Equals(e.Status, "Retired", StringComparison.OrdinalIgnoreCase) || 
+                    var isRetiredOrExcluded = string.Equals(e.Status, "Retired", StringComparison.OrdinalIgnoreCase) ||
                                              string.Equals(e.Status, "Excluded", StringComparison.OrdinalIgnoreCase) ||
                                              string.Equals(e.Status, "SuperRally", StringComparison.OrdinalIgnoreCase);
                     var rowClass = isRetiredOrExcluded ? "table-warning" : "";
