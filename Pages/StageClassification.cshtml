@@ -35,8 +35,36 @@
             <li class="breadcrumb-item active" aria-current="page">Stage Classification</li>
         </ol>
     </nav>
+    @if (!string.IsNullOrEmpty(Model.RallyName))
+    {
+        <h2>@Model.EventDate.Year @Model.RallyName</h2>
+        <p class="text-muted">Stage Classification @(hasStageSelected ? $"— SS{Model.SelectedStageSeq}: {Model.SelectedStageName}" : "") @(hasClassFilter ? $"— Class: {Model.ClassId}" : "")</p>
+    }
+    else
+    {
+        <h2>Stage Classification</h2>
+        <p class="text-muted">Select a stage to view classification @(hasClassFilter ? $"— Class: {Model.ClassId}" : "")</p>
+    }
 
-    <div class="row mb-4">
+    @if (hasStageSelected && Model.SelectedStageInfo != null)
+    {
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Stage:</strong> SS@Model.SelectedStageInfo.StageNumber - @Model.SelectedStageInfo.StageName</p>
+                <p class="mb-1"><strong>Length:</strong> @Model.SelectedStageInfo.StageLength @Model.SelectedStageInfo.StageType</p>
+            </div>
+            <div class="col-md-6">
+                @if (Model.SelectedStageInfo.BogeyTimeSeconds.HasValue)
+                {
+                    <p class="mb-1"><strong>Bogey Time:</strong> @Model.FormatTime(Model.SelectedStageInfo.BogeyTimeSeconds)</p>
+                }
+                @if (Model.SelectedStageInfo.MaxTimeSeconds.HasValue)
+                {
+                    <p class="mb-1"><strong>Max Time:</strong> @Model.FormatTime(Model.SelectedStageInfo.MaxTimeSeconds)</p>
+                }
+            </div>
+        </div>
+    }
         <div class="col-md-6">
             <label class="form-label">Select Stage</label>
             <select class="form-select" id="stageSelector" onchange="window.location.href = '/StageClassification?id=@Model.RallyRowKey&stageSeq=' + this.value + '@(hasClassFilter ? "&classId=" + Model.ClassId : "")'">

@@ -16,6 +16,7 @@ namespace App_FrontEnd.Pages
         public string? SelectedStageName { get; set; }
         public string? ClassId { get; set; }
         public List<StageClassificationItem> Entries { get; set; } = new();
+        public StageInfo? SelectedStageInfo { get; set; }
 
         public async Task OnGetAsync()
         {
@@ -59,9 +60,20 @@ namespace App_FrontEnd.Pages
             }
             catch { }
 
-            // Get stage classification if stage selected
+            // Get stage details for selected stage (for Bogey/Max times)
             if (SelectedStageSeq.HasValue)
             {
+                try
+                {
+                    var stages = await c.GetFromJsonAsync<List<StageInfo>>($"{baseUrl}/profiles/rally/stages?id={RallyRowKey}");
+                    if (stages != null)
+                    {
+                        SelectedStageInfo = stages.FirstOrDefault(s => s.StageNumber == SelectedStageSeq.Value);
+                    }
+                }
+                catch { }
+
+                // Get stage classification if stage selected
                 try
                 {
                     var url = $"{baseUrl}/leaderboard/stage?id={RallyRowKey}&stageSeq={SelectedStageSeq.Value}";
