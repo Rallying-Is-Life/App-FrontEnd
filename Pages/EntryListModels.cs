@@ -53,6 +53,8 @@ namespace App_FrontEnd.Pages
         public string? FlagUrl { get; set; }
         public DateTimeOffset? StageDate { get; set; }
         public string? Leg { get; set; }
+        public double? BogeyTimeSeconds { get; set; }
+        public double? MaxTimeSeconds { get; set; }
     }
 
     // Leaderboard models
@@ -99,6 +101,8 @@ namespace App_FrontEnd.Pages
         public bool? MaxTimeHit { get; set; }
         public double? BogeyTimeSeconds { get; set; }
         public double? MaxTimeSeconds { get; set; }
+        public int? OverallPosition { get; set; }
+        public int? ClassPosition { get; set; }
     }
 
     public class CrewDetailResponse
@@ -115,7 +119,8 @@ namespace App_FrontEnd.Pages
     // Stage classification models
     public class StageClassificationItem
     {
-        public int Position { get; set; }
+        public int OverallPosition { get; set; }
+        public int ClassPosition { get; set; }
         public string EntrantId { get; set; } = string.Empty;
         public string DriverName { get; set; } = string.Empty;
         public string CoDriverName { get; set; } = string.Empty;

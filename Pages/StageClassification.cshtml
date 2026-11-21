@@ -39,8 +39,34 @@
         <p class="text-muted">Select a stage to view classification @(hasClassFilter ? $"— Class: {Model.ClassId}" : "")</p>
     }
 
+    @if (hasStageSelected && Model.SelectedStageInfo != null)
+    {
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <p class="mb-1"><strong>Length:</strong> @Model.SelectedStageInfo.StageLength @Model.SelectedStageInfo.StageType</p>
+            </div>
+            <div class="col-md-6">
+                @if (Model.SelectedStageInfo.BogeyTimeSeconds.HasValue)
+                {
+                    <p class="mb-1"><strong>Bogey Time:</strong> @Model.FormatTime(Model.SelectedStageInfo.BogeyTimeSeconds)</p>
+                }
+                @if (Model.SelectedStageInfo.MaxTimeSeconds.HasValue)
+                {
+                    <p class="mb-1"><strong>Max Time:</strong> @Model.FormatTime(Model.SelectedStageInfo.MaxTimeSeconds)</p>
+                }
+            </div>
+        </div>
+    }
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb bg-transparent mb-0 p-0">
+            <li class="breadcrumb-item"><a href="/RallyProfile?id=@Model.RallyRowKey">Rally Profile</a></li>
+            <li class="breadcrumb-item"><a href="/Leaderboard?id=@Model.RallyRowKey">Results</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Stage Classification</li>
+        </ol>
+    </nav>
+
     <div class="row mb-4">
-        <div class="col-md-6">
             <label class="form-label">Select Stage</label>
             <select class="form-select" id="stageSelector" onchange="window.location.href = '/StageClassification?id=@Model.RallyRowKey&stageSeq=' + this.value + '@(hasClassFilter ? "&classId=" + Model.ClassId : "")'">
                 @Html.Raw(stageOptions.ToString())
@@ -65,7 +91,8 @@
             <table class="table table-sm table-striped table-hover table-bordered rounded table-container">
                 <thead class="table-dark">
                     <tr>
-                        <th class="text-center" style="width:60px;">Pos</th>
+                        <th class="text-center" style="width:60px;">Ovr Pos</th>
+                        <th class="text-center" style="width:60px;">Cls Pos</th>
                         <th class="text-center" style="width:80px;">Car #</th>
                         <th>Driver</th>
                         <th>Co-Driver</th>
@@ -78,7 +105,8 @@
                     @foreach (var e in Model.Entries)
                     {
                         <tr class="hover-lift">
-                            <td class="text-center fw-bold">@e.Position</td>
+                            <td class="text-center fw-bold">@e.OverallPosition@Model.GetTrophyEmoji(e.OverallPosition)</td>
+                            <td class="text-center fw-bold">@(e.ClassPosition > 0 ? e.ClassPosition.ToString() : "—")</td>
                             <td class="text-center fw-bold">@e.RaceNumber</td>
                             <td>@e.DriverName</td>
                             <td>@e.CoDriverName</td>
