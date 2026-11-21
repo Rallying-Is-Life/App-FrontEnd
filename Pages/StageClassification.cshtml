@@ -28,13 +28,6 @@
     }
 }
 <div class="card-modern p-4 mb-4">
-    <nav aria-label="breadcrumb" class="mb-3">
-        <ol class="breadcrumb bg-transparent mb-0 p-0">
-            <li class="breadcrumb-item"><a href="/RallyProfile?id=@Model.RallyRowKey">Rally Profile</a></li>
-            <li class="breadcrumb-item"><a href="/Leaderboard?id=@Model.RallyRowKey">Results</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Stage Classification</li>
-        </ol>
-    </nav>
     @if (!string.IsNullOrEmpty(Model.RallyName))
     {
         <h2>@Model.EventDate.Year @Model.RallyName</h2>
@@ -65,7 +58,16 @@
             </div>
         </div>
     }
-        <div class="col-md-6">
+
+    <nav aria-label="breadcrumb" class="mb-3">
+        <ol class="breadcrumb bg-transparent mb-0 p-0">
+            <li class="breadcrumb-item"><a href="/RallyProfile?id=@Model.RallyRowKey">Rally Profile</a></li>
+            <li class="breadcrumb-item"><a href="/Leaderboard?id=@Model.RallyRowKey">Results</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Stage Classification</li>
+        </ol>
+    </nav>
+
+    <div class="row mb-4">
             <label class="form-label">Select Stage</label>
             <select class="form-select" id="stageSelector" onchange="window.location.href = '/StageClassification?id=@Model.RallyRowKey&stageSeq=' + this.value + '@(hasClassFilter ? "&classId=" + Model.ClassId : "")'">
                 @Html.Raw(stageOptions.ToString())
