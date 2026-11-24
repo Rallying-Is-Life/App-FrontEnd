@@ -163,4 +163,23 @@ namespace App_FrontEnd.Pages
         public int StageNumber { get; set; }
         public string StageName { get; set; } = string.Empty;
     }
+
+    // Can You Help - entries with blank car ID
+    public class MissingCanHelpItem
+    {
+        public string RallyRowKey { get; set; } = string.Empty;
+        public int Year { get; set; }
+        public string EventName { get; set; } = string.Empty;
+        public string CarNumber { get; set; } = string.Empty;
+        public string CarMake { get; set; } = string.Empty;
+        public string CarModel { get; set; } = string.Empty;
+        public string Driver { get; set; } = string.Empty;
+        public string CoDriver { get; set; } = string.Empty;
+    }
+
+    public class MissingCanHelpResponse
+    {
+        public int Count { get; set; }
+        public List<MissingCanHelpItem> Items { get; set; } = new();
+    }
 }

@@ -1,0 +1,62 @@
+@page
+@model App_FrontEnd.Pages.CanHelpModel
+@{
+    ViewData["Title"] = "Can You Help?";
+}
+<div class="card-modern p-4 mb-4">
+    <h2>Can You Help?</h2>
+    <p class="text-muted small">Please help identify the cars used.</p>
+    
+    @if (Model.Count == 0)
+    {
+        <p class="text-muted">No entries with blank car IDs found.</p>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="table table-sm table-striped table-bordered rounded table-container">
+                <thead class="table-dark">
+                    <tr>
+                        <th class="text-center" style="width:60px;">Year</th>
+                        <th>Event</th>
+                        <th class="text-center" style="width:80px;">Car #</th>
+                        <th>Car</th>
+                        <th>Crew</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td class="text-center">@item.Year</td>
+                            <td>@item.EventName</td>
+                            <td class="text-center">@item.CarNumber</td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.CarMake) || !string.IsNullOrEmpty(item.CarModel))
+                                {
+                                    <strong>@item.CarMake @item.CarModel</strong>
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Make/Model not recorded</span>
+                                }
+                            </td>
+                            <td>
+                                @if (!string.IsNullOrEmpty(item.Driver) || !string.IsNullOrEmpty(item.CoDriver))
+                                {
+                                    @item.Driver <span class="text-muted">/</span> @item.CoDriver
+                                }
+                                else
+                                {
+                                    <span class="text-muted">No driver info</span>
+                                }
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        
+        <p class="text-muted small mt-2">Total entries with blank car IDs: @Model.Count</p>
+    }
+</div>
