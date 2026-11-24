@@ -16,7 +16,7 @@ namespace App_FrontEnd.Pages
             
             try
             {
-                var data = await c.GetFromJsonAsync<MissingCanHelpResponse>($"{baseUrl}/entries/can-help");
+                var data = await c.GetFromJsonAsync<MissingCanHelpResponse>($"{baseUrl}/helpneeded/cars");
                 if (data != null)
                 {
                     Items = data.Items ?? new();
