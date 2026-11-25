@@ -29,14 +29,14 @@ var apiScopes = Environment.GetEnvironmentVariable("ApiScopes") ??
     (string.IsNullOrEmpty(apiClientId) ? "Api.Read,Api.Write" : $"api://{apiClientId}/Api.Read,api://{apiClientId}/Api.Write");
 
 // Build Instance and Authority for CIAM vs regular Entra ID
-// For CIAM: Instance = Authority = https://{tenant-name}.ciamlogin.com/{tenant-id}/v2.0
+// For CIAM: Instance = https://{tenant-name}.ciamlogin.com/, Authority = https://{tenant-name}.ciamlogin.com/{tenant-id}/v2.0
 // For regular Entra ID: Instance = https://login.microsoftonline.com, Authority = organizations/v2.0 or tenant/v2.0
 var instance = string.IsNullOrEmpty(ciamTenantName)
-    ? (Environment.GetEnvironmentVariable("AzureAd__Instance") ?? "https://login.microsoftonline.com")
-    : $"https://{ciamTenantName}.ciamlogin.com/{tenantId}/v2.0";
+    ? (Environment.GetEnvironmentVariable("AzureAd__Instance") ?? "https://login.microsoftonline.com/")
+    : $"https://{ciamTenantName}.ciamlogin.com/";
 var authority = string.IsNullOrEmpty(ciamTenantName)
     ? (string.IsNullOrEmpty(tenantId) ? $"{instance.TrimEnd('/')}/organizations/v2.0" : $"{instance.TrimEnd('/')}/{tenantId}/v2.0")
-    : instance; // CIAM uses same URL for both
+    : $"{instance.TrimEnd('/')}/{tenantId}/v2.0";
 var domainForConfig = string.IsNullOrEmpty(ciamTenantName)
     ? domain
     : $"{ciamTenantName}.onmicrosoft.com";
