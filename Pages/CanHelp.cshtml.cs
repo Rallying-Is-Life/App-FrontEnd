@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System.Net.Http.Json;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 namespace App_FrontEnd.Pages
 {
@@ -13,7 +14,7 @@ namespace App_FrontEnd.Pages
         {
             using var c = new HttpClient();
             var baseUrl = HttpContext.RequestServices.GetRequiredService<IConfiguration>()["apiRallyingIsLifeBaseURL"]?.TrimEnd('/') ?? "";
-            
+
             try
             {
                 var data = await c.GetFromJsonAsync<MissingCanHelpResponse>($"{baseUrl}/helpneeded/cars");
@@ -23,7 +24,11 @@ namespace App_FrontEnd.Pages
                     Count = data.Count;
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                var logger = HttpContext.RequestServices.GetRequiredService<ILogger<CanHelpModel>>();
+                logger.LogError(ex, "Failed to fetch CanHelp data from {Url}", baseUrl);
+            }
         }
     }
 }
