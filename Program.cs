@@ -87,18 +87,23 @@ builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .EnableTokenAcquisitionToCallDownstreamApi(Array.Empty<string>())
     .AddDistributedTokenCaches(); // Uses distributed cache (Redis or memory)
 
+var cookieDomain = Environment.GetEnvironmentVariable("CookieDomain") ?? "";
+
 // Configure cookie authentication to work with custom domain (www.loverallying.uk)
 // Uses PostConfigure to run after Microsoft.Identity.Web sets up the cookie scheme
-builder.Services.PostConfigure<CookieAuthenticationOptions>(
-    CookieAuthenticationDefaults.AuthenticationScheme,
-    options =>
-    {
-        options.Cookie.Domain = ".loverallying.uk"; // Share across subdomains
-        options.Cookie.SameSite = SameSiteMode.Lax;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.Cookie.HttpOnly = true;
-        options.Cookie.IsEssential = true;
-    });
+if (!string.IsNullOrEmpty(cookieDomain))
+{
+    builder.Services.PostConfigure<CookieAuthenticationOptions>(
+        CookieAuthenticationDefaults.AuthenticationScheme,
+        options =>
+        {
+            options.Cookie.Domain = cookieDomain; // e.g., ".loverallying.uk"
+            options.Cookie.SameSite = SameSiteMode.Lax;
+            options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.Cookie.HttpOnly = true;
+            options.Cookie.IsEssential = true;
+        });
+}
 
 builder.Services.AddControllersWithViews(options =>
 {
