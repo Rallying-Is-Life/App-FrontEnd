@@ -107,22 +107,27 @@ if (!string.IsNullOrEmpty(cookieDomain))
 
 // Configure OIDC correlation/nonce cookies to work correctly
 // These are used during the auth flow (state parameter) and must match the request domain
-builder.Services.Configure<OpenIdConnectOptions>(
-    OpenIdConnectDefaults.AuthenticationScheme,
-    options =>
-    {
-        options.CorrelationCookie.Domain = cookieDomain; // Use same domain logic
-        options.CorrelationCookie.SameSite = SameSiteMode.Lax;
-        options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.CorrelationCookie.HttpOnly = true;
-        options.CorrelationCookie.IsEssential = true;
+// Only set Domain when CookieDomain env var is provided (for custom domains)
+// When empty, let browser use default (current host) which works for azurewebsites.net
+if (!string.IsNullOrEmpty(cookieDomain))
+{
+    builder.Services.Configure<OpenIdConnectOptions>(
+        OpenIdConnectDefaults.AuthenticationScheme,
+        options =>
+        {
+            options.CorrelationCookie.Domain = cookieDomain;
+            options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+            options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.CorrelationCookie.HttpOnly = true;
+            options.CorrelationCookie.IsEssential = true;
 
-        options.NonceCookie.Domain = cookieDomain;
-        options.NonceCookie.SameSite = SameSiteMode.Lax;
-        options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
-        options.NonceCookie.HttpOnly = true;
-        options.NonceCookie.IsEssential = true;
-    });
+            options.NonceCookie.Domain = cookieDomain;
+            options.NonceCookie.SameSite = SameSiteMode.Lax;
+            options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
+            options.NonceCookie.HttpOnly = true;
+            options.NonceCookie.IsEssential = true;
+        });
+}
 
 builder.Services.AddControllersWithViews(options =>
 {
