@@ -107,27 +107,28 @@ if (!string.IsNullOrEmpty(cookieDomain))
 
 // Configure OIDC correlation/nonce cookies to work correctly
 // These are used during the auth flow (state parameter) and must match the request domain
-// Only set Domain when CookieDomain env var is provided (for custom domains)
-// When empty, let browser use default (current host) which works for azurewebsites.net
-if (!string.IsNullOrEmpty(cookieDomain))
-{
-    builder.Services.Configure<OpenIdConnectOptions>(
-        OpenIdConnectDefaults.AuthenticationScheme,
-        options =>
+// Prod: CookieDomain set (e.g., .loverallying.uk) -> set Domain + SameSite=Lax
+// Dev: CookieDomain empty -> set SameSite=Lax (no Domain, uses current host)
+builder.Services.Configure<OpenIdConnectOptions>(
+    OpenIdConnectDefaults.AuthenticationScheme,
+    options =>
+    {
+        if (!string.IsNullOrEmpty(cookieDomain))
         {
             options.CorrelationCookie.Domain = cookieDomain;
-            options.CorrelationCookie.SameSite = SameSiteMode.Lax;
-            options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
-            options.CorrelationCookie.HttpOnly = true;
-            options.CorrelationCookie.IsEssential = true;
-
             options.NonceCookie.Domain = cookieDomain;
-            options.NonceCookie.SameSite = SameSiteMode.Lax;
-            options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
-            options.NonceCookie.HttpOnly = true;
-            options.NonceCookie.IsEssential = true;
-        });
-}
+        }
+        // Always set SameSite=Lax for correlation/nonce cookies (fixes default None)
+        options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+        options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.CorrelationCookie.HttpOnly = true;
+        options.CorrelationCookie.IsEssential = true;
+
+        options.NonceCookie.SameSite = SameSiteMode.Lax;
+        options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.NonceCookie.HttpOnly = true;
+        options.NonceCookie.IsEssential = true;
+    });
 
 builder.Services.AddControllersWithViews(options =>
 {
