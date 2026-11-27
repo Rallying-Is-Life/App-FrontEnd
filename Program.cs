@@ -105,10 +105,8 @@ if (!string.IsNullOrEmpty(cookieDomain))
         });
 }
 
-// Configure OIDC correlation/nonce cookies to work correctly
-// These are used during the auth flow (state parameter) and must match the request domain
-// Prod: CookieDomain set (e.g., .loverallying.uk) -> set Domain + SameSite=Lax
-// Dev: CookieDomain empty -> set SameSite=Lax (no Domain, uses current host)
+// OIDC correlation and nonce cookies must be sent on the identity provider's
+// cross-site POST back to /signin-oidc. SameSite=None requires Secure.
 builder.Services.Configure<OpenIdConnectOptions>(
     OpenIdConnectDefaults.AuthenticationScheme,
     options =>
@@ -118,15 +116,14 @@ builder.Services.Configure<OpenIdConnectOptions>(
             options.CorrelationCookie.Domain = cookieDomain;
             options.NonceCookie.Domain = cookieDomain;
         }
-        // Always set SameSite=Lax for correlation/nonce cookies (fixes default None)
-        // Set correlation cookie path to "/" so it's available on both /MicrosoftIdentity/Account/SignIn and /signin-oidc
+        // Keep the correlation cookie available across the sign-in and callback paths.
         options.CorrelationCookie.Path = "/";
-        options.CorrelationCookie.SameSite = SameSiteMode.Lax;
+        options.CorrelationCookie.SameSite = SameSiteMode.None;
         options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
         options.CorrelationCookie.HttpOnly = true;
         options.CorrelationCookie.IsEssential = true;
 
-        options.NonceCookie.SameSite = SameSiteMode.Lax;
+        options.NonceCookie.SameSite = SameSiteMode.None;
         options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
         options.NonceCookie.HttpOnly = true;
         options.NonceCookie.IsEssential = true;
