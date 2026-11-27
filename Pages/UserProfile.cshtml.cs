@@ -96,13 +96,23 @@ public class UserProfile : PageModel
 
     private string[] GetScopes(string operation)
     {
-        var apiClientId = _configuration["ApiClientId"] ?? "";
-        if (!string.IsNullOrEmpty(apiClientId))
+        var requestedScope = $"Api.{operation}";
+        var configuredScopes = _configuration.GetSection("DownstreamApi:Scopes")
+            .GetChildren()
+            .Select(scope => scope.Value)
+            .Where(scope => !string.IsNullOrWhiteSpace(scope))
+            .Cast<string>();
+        var scope = configuredScopes.FirstOrDefault(candidate =>
+            candidate.Equals(requestedScope, StringComparison.OrdinalIgnoreCase) ||
+            candidate.EndsWith($"/{requestedScope}", StringComparison.OrdinalIgnoreCase));
+
+        if (scope is null)
         {
-            return new[] { $"api://{apiClientId}/Api.{operation}" };
+            throw new InvalidOperationException(
+                $"DownstreamApiScopes must include the API scope '{requestedScope}' (for example, api://<API application ID>/{requestedScope}).");
         }
-        // Fallback to bare scopes (legacy)
-        return new[] { $"Api.{operation}" };
+
+        return new[] { scope };
     }
 
     private async Task LoadReferenceDataAsync()
@@ -186,7 +196,20 @@ public class UserProfile : PageModel
             }
             else
             {
-                ErrorMessage = $"Failed to load profile: {response.StatusCode}";
+                var errorContent = await response.Content.ReadAsStringAsync();
+                var authChallenge = string.Join(", ", response.Headers.WwwAuthenticate.Select(value => value.ToString()));
+                var details = new List<string>();
+                if (!string.IsNullOrWhiteSpace(errorContent))
+                {
+                    details.Add(errorContent);
+                }
+                if (!string.IsNullOrWhiteSpace(authChallenge))
+                {
+                    details.Add($"WWW-Authenticate: {authChallenge}");
+                }
+
+                ErrorMessage = $"Failed to load profile: {(int)response.StatusCode} {response.StatusCode}" +
+                    (details.Count > 0 ? $" - {string.Join("; ", details)}" : "");
             }
         }
         catch (MicrosoftIdentityWebChallengeUserException)

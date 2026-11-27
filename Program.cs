@@ -26,8 +26,9 @@ var ciamTenantName = Environment.GetEnvironmentVariable("CiamTenantName") ?? "";
 // Downstream API (custom API) configuration
 var apiClientId = Environment.GetEnvironmentVariable("ApiClientId") ?? "";
 var apiBaseUrl = Environment.GetEnvironmentVariable("ApiBaseUrl") ?? "";
-var apiScopes = Environment.GetEnvironmentVariable("ApiScopes") ?? 
-    (string.IsNullOrEmpty(apiClientId) ? "Api.Read,Api.Write" : $"api://{apiClientId}/Api.Read,api://{apiClientId}/Api.Write");
+var downstreamApiScopes = Environment.GetEnvironmentVariable("DownstreamApiScopes")
+    ?? Environment.GetEnvironmentVariable("ApiScopes")
+    ?? (string.IsNullOrEmpty(apiClientId) ? "Api.Read,Api.Write" : $"api://{apiClientId}/Api.Read,api://{apiClientId}/Api.Write");
 
 // Build Instance and Authority for CIAM vs regular Entra ID
 // For CIAM: Instance = https://{tenant-name}.ciamlogin.com/, Authority = https://{tenant-name}.ciamlogin.com/{tenant-id}/v2.0
@@ -52,8 +53,19 @@ builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
     ["AzureAd:CallbackPath"] = "/signin-oidc",
     ["AzureAd:SignedOutCallbackPath"] = "/signout-callback-oidc",
     ["AzureAd:Authority"] = authority,
-    ["AzureAd:Domain"] = domainForConfig
+    ["AzureAd:Domain"] = domainForConfig,
+    ["ApiClientId"] = apiClientId,
+    ["DownstreamApiScopes"] = downstreamApiScopes
 });
+
+var scopeValues = downstreamApiScopes
+    .Replace(',', ' ')
+    .Replace(';', ' ')
+    .Split((char[]?)null, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+for (var i = 0; i < scopeValues.Length; i++)
+{
+    builder.Configuration[$"DownstreamApi:Scopes:{i}"] = scopeValues[i];
+}
 
 builder.Services.AddRazorPages();
 
@@ -105,29 +117,29 @@ if (!string.IsNullOrEmpty(cookieDomain))
         });
 }
 
-// Configure OIDC correlation/nonce cookies to work correctly
-// These are used during the auth flow (state parameter) and must match the request domain
-// Only set Domain when CookieDomain env var is provided (for custom domains)
-// When empty, let browser use default (current host) which works for azurewebsites.net
-if (!string.IsNullOrEmpty(cookieDomain))
-{
-    builder.Services.Configure<OpenIdConnectOptions>(
-        OpenIdConnectDefaults.AuthenticationScheme,
-        options =>
+// OIDC correlation and nonce cookies must be sent on the identity provider's
+// cross-site POST back to /signin-oidc. SameSite=None requires Secure.
+builder.Services.Configure<OpenIdConnectOptions>(
+    OpenIdConnectDefaults.AuthenticationScheme,
+    options =>
+    {
+        if (!string.IsNullOrEmpty(cookieDomain))
         {
             options.CorrelationCookie.Domain = cookieDomain;
-            options.CorrelationCookie.SameSite = SameSiteMode.Lax;
-            options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
-            options.CorrelationCookie.HttpOnly = true;
-            options.CorrelationCookie.IsEssential = true;
-
             options.NonceCookie.Domain = cookieDomain;
-            options.NonceCookie.SameSite = SameSiteMode.Lax;
-            options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
-            options.NonceCookie.HttpOnly = true;
-            options.NonceCookie.IsEssential = true;
-        });
-}
+        }
+        // Keep the correlation cookie available across the sign-in and callback paths.
+        options.CorrelationCookie.Path = "/";
+        options.CorrelationCookie.SameSite = SameSiteMode.None;
+        options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.CorrelationCookie.HttpOnly = true;
+        options.CorrelationCookie.IsEssential = true;
+
+        options.NonceCookie.SameSite = SameSiteMode.None;
+        options.NonceCookie.SecurePolicy = CookieSecurePolicy.Always;
+        options.NonceCookie.HttpOnly = true;
+        options.NonceCookie.IsEssential = true;
+    });
 
 builder.Services.AddControllersWithViews(options =>
 {
