@@ -196,7 +196,20 @@ public class UserProfile : PageModel
             }
             else
             {
-                ErrorMessage = $"Failed to load profile: {response.StatusCode}";
+                var errorContent = await response.Content.ReadAsStringAsync();
+                var authChallenge = string.Join(", ", response.Headers.WwwAuthenticate.Select(value => value.ToString()));
+                var details = new List<string>();
+                if (!string.IsNullOrWhiteSpace(errorContent))
+                {
+                    details.Add(errorContent);
+                }
+                if (!string.IsNullOrWhiteSpace(authChallenge))
+                {
+                    details.Add($"WWW-Authenticate: {authChallenge}");
+                }
+
+                ErrorMessage = $"Failed to load profile: {(int)response.StatusCode} {response.StatusCode}" +
+                    (details.Count > 0 ? $" - {string.Join("; ", details)}" : "");
             }
         }
         catch (MicrosoftIdentityWebChallengeUserException)
