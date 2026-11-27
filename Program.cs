@@ -119,6 +119,8 @@ builder.Services.Configure<OpenIdConnectOptions>(
             options.NonceCookie.Domain = cookieDomain;
         }
         // Always set SameSite=Lax for correlation/nonce cookies (fixes default None)
+        // Set correlation cookie path to "/" so it's available on both /MicrosoftIdentity/Account/SignIn and /signin-oidc
+        options.CorrelationCookie.Path = "/";
         options.CorrelationCookie.SameSite = SameSiteMode.Lax;
         options.CorrelationCookie.SecurePolicy = CookieSecurePolicy.Always;
         options.CorrelationCookie.HttpOnly = true;
