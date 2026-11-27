@@ -26,8 +26,9 @@ var ciamTenantName = Environment.GetEnvironmentVariable("CiamTenantName") ?? "";
 // Downstream API (custom API) configuration
 var apiClientId = Environment.GetEnvironmentVariable("ApiClientId") ?? "";
 var apiBaseUrl = Environment.GetEnvironmentVariable("ApiBaseUrl") ?? "";
-var apiScopes = Environment.GetEnvironmentVariable("ApiScopes") ?? 
-    (string.IsNullOrEmpty(apiClientId) ? "Api.Read,Api.Write" : $"api://{apiClientId}/Api.Read,api://{apiClientId}/Api.Write");
+var downstreamApiScopes = Environment.GetEnvironmentVariable("DownstreamApiScopes")
+    ?? Environment.GetEnvironmentVariable("ApiScopes")
+    ?? (string.IsNullOrEmpty(apiClientId) ? "Api.Read,Api.Write" : $"api://{apiClientId}/Api.Read,api://{apiClientId}/Api.Write");
 
 // Build Instance and Authority for CIAM vs regular Entra ID
 // For CIAM: Instance = https://{tenant-name}.ciamlogin.com/, Authority = https://{tenant-name}.ciamlogin.com/{tenant-id}/v2.0
@@ -52,8 +53,19 @@ builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
     ["AzureAd:CallbackPath"] = "/signin-oidc",
     ["AzureAd:SignedOutCallbackPath"] = "/signout-callback-oidc",
     ["AzureAd:Authority"] = authority,
-    ["AzureAd:Domain"] = domainForConfig
+    ["AzureAd:Domain"] = domainForConfig,
+    ["ApiClientId"] = apiClientId,
+    ["DownstreamApiScopes"] = downstreamApiScopes
 });
+
+var scopeValues = downstreamApiScopes
+    .Replace(',', ' ')
+    .Replace(';', ' ')
+    .Split((char[]?)null, StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+for (var i = 0; i < scopeValues.Length; i++)
+{
+    builder.Configuration[$"DownstreamApi:Scopes:{i}"] = scopeValues[i];
+}
 
 builder.Services.AddRazorPages();
 
