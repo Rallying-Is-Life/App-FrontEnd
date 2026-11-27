@@ -105,14 +105,69 @@ if (!string.IsNullOrEmpty(cookieDomain))
         });
 }
 
-// Configure OIDC correlation/nonce cookies to work correctly
-// These are used during the auth flow (state parameter) and must match the request domain
-// Prod: CookieDomain set (e.g., .loverallying.uk) -> set Domain + SameSite=Lax
-// Dev: CookieDomain empty -> set SameSite=Lax (no Domain, uses current host)
+// Workaround for .NET 10 bug: correlation/nonce cookie value is "N" instead of correlation ID
+// Use OnRedirectToIdentityProvider to manually set correlation cookie with correct value
 builder.Services.Configure<OpenIdConnectOptions>(
     OpenIdConnectDefaults.AuthenticationScheme,
     options =>
     {
+        options.Events = new OpenIdConnectEvents
+        {
+            OnRedirectToIdentityProvider = context =>
+            {
+                // Manually set correlation cookie with correct value (correlation ID)
+                var correlationId = context.Properties.Items["__correlationId"]?.ToString() 
+                    ?? Guid.NewGuid().ToString("N");
+                
+                var cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions
+                {
+                    HttpOnly = true,
+                    Secure = true,
+                    SameSite = SameSiteMode.Lax,
+                    IsEssential = true,
+                    Path = "/",
+                    Expires = DateTimeOffset.UtcNow.AddMinutes(10)
+                };
+                if (!string.IsNullOrEmpty(cookieDomain))
+                {
+                    cookieOptions.Domain = cookieDomain;
+                }
+                
+                context.Response.Cookies.Append(
+                    ".AspNetCore.Correlation." + correlationId,
+                    correlationId,
+                    cookieOptions);
+                
+                // Also store correlation ID in properties for validation
+                context.Properties.Items["__correlationId"] = correlationId;
+                
+                return Task.CompletedTask;
+            },
+            OnRemoteFailure = context =>
+            {
+                // Clear correlation cookie on failure
+                var correlationId = context.Properties.Items["__correlationId"]?.ToString();
+                if (!string.IsNullOrEmpty(correlationId))
+                {
+                    var cookieOptions = new Microsoft.AspNetCore.Http.CookieOptions
+                    {
+                        HttpOnly = true,
+                        Secure = true,
+                        SameSite = SameSiteMode.Lax,
+                        IsEssential = true,
+                        Path = "/",
+                        Expires = DateTimeOffset.UtcNow.AddDays(-1)
+                    };
+                    if (!string.IsNullOrEmpty(cookieDomain))
+                    {
+                        cookieOptions.Domain = cookieDomain;
+                    }
+                    context.Response.Cookies.Delete(".AspNetCore.Correlation." + correlationId, cookieOptions);
+                }
+                return Task.CompletedTask;
+            }
+        };
+        
         if (!string.IsNullOrEmpty(cookieDomain))
         {
             options.CorrelationCookie.Domain = cookieDomain;
